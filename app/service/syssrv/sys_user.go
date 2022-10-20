@@ -1,3 +1,3 @@
-package system
+package syssrv
 
 type SysUserService struct{}

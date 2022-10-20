@@ -12,6 +12,8 @@ import (
 
 type SysPasswordService struct{}
 
+var SysPasswordSrv = new(SysPasswordService)
+
 // MaxRetryCount todo 优化
 const MaxRetryCount int = 5
 const LockTime = 10 * time.Minute

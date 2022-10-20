@@ -14,6 +14,8 @@ import (
 
 type TokenService struct{}
 
+var TokenSrv = new(TokenService)
+
 var expireTime = 30 * time.Minute
 
 const MillisMinuteTen = 20 * time.Minute

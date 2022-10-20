@@ -1,15 +1,18 @@
-package system
+package syssrv
 
 import (
 	"context"
-	"go-web-template/app/dao"
+	"github.com/gin-gonic/gin"
+	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
 )
 
 type SysConfigService struct{}
 
+var SysConfigSrv = new(SysConfigService)
+
 func (s *SysConfigService) SelectConfigById(ctx context.Context, configId int64) (*system.SysConfig, error) {
-	configDao := dao.NewSysConfigDao(ctx)
+	configDao := sysdao.NewSysConfigDao(ctx)
 	data, err := configDao.SelectConfigById(configId)
 	if err != nil {
 		return nil, err
@@ -21,7 +24,7 @@ func (s *SysConfigService) SelectConfigByKey(ctx context.Context, configKey stri
 	return "", nil
 }
 
-func (s *SysConfigService) SelectCaptchaEnabled(ctx context.Context) (bool, error) {
+func (s *SysConfigService) SelectCaptchaEnabled(ctx *gin.Context) (bool, error) {
 	return false, nil
 }
 
@@ -38,7 +41,7 @@ func (s *SysConfigService) UpdateConfig(ctx context.Context, config *system.SysC
 }
 
 func (s *SysConfigService) DeleteConfigByIds(ctx context.Context, ids []int64) error {
-	configDao := dao.NewSysConfigDao(ctx)
+	configDao := sysdao.NewSysConfigDao(ctx)
 	return configDao.DeleteConfigByIds(ids)
 }
 

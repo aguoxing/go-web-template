@@ -1,4 +1,4 @@
-package system
+package sysdao
 
 import (
 	"context"
@@ -53,7 +53,7 @@ func (dao *SysConfigDao) DeleteConfigById(id int64) error {
 }
 
 func (dao *SysConfigDao) DeleteConfigByIds(ids []int64) error {
-	//return dao.DB.Where("config_id IN ?", ids).Delete(&system.SysConfig{}).Error
+	//return dao.DB.Where("config_id IN ?", ids).Delete(&syssrv.SysConfig{}).Error
 	return dao.DB.Delete(&system.SysConfig{}, "config_id IN ?", ids).Error
 }
 

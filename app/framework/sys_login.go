@@ -3,20 +3,21 @@ package framework
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"go-web-template/app/dao"
+	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/request"
 	"go-web-template/app/model/system/response"
-	"go-web-template/app/service"
+	"go-web-template/app/service/syssrv"
 	"go-web-template/global"
 	"go-web-template/util/captcha"
 )
 
 type SysLoginService struct{}
 
+var SysLoginSrv = new(SysLoginService)
+
 func (s *SysLoginService) Login(ctx *gin.Context, loginBody *request.LoginBody) (string, error) {
-	//captchaEnabled, _ := service.Srv.SysConfigService.SelectCaptchaEnabled(ctx)
-	captchaEnabled, _ := service.Srv.SysSrv.SysConfigService.SelectCaptchaEnabled(ctx)
+	captchaEnabled, _ := syssrv.SysConfigSrv.SelectCaptchaEnabled(ctx)
 	// 验证码开关
 	if captchaEnabled {
 		// 验证码验证
@@ -31,9 +32,7 @@ func (s *SysLoginService) Login(ctx *gin.Context, loginBody *request.LoginBody) 
 		global.Logger.Error(err)
 		return "", err
 	}
-	//token, err := service.Srv.TokenService.CreateToken(loginUser)
-	t := TokenService{}
-	token, err := t.CreateToken(loginUser)
+	token, err := TokenSrv.CreateToken(loginUser)
 	if err != nil {
 		global.Logger.Error(err)
 		return "", err
@@ -47,7 +46,7 @@ func recordLoginInfo(userId int64) {
 }
 
 func loadUserByUsername(ctx *gin.Context, loginBody *request.LoginBody) (*response.LoginUser, error) {
-	userDao := dao.NewUserDao(ctx)
+	userDao := sysdao.NewSysUserDao(ctx)
 	sysUser, err := userDao.SelectUserByUserName(loginBody.UserName)
 	if err != nil {
 		global.Logger.Error(err)
@@ -65,9 +64,7 @@ func loadUserByUsername(ctx *gin.Context, loginBody *request.LoginBody) (*respon
 		return nil, errors.New("账号已停用")
 	}
 	// 密码验证
-	//err = service.Srv.SysPasswordService.Validate(sysUser, loginBody)
-	t := SysPasswordService{}
-	err = t.Validate(sysUser, loginBody)
+	err = SysPasswordSrv.Validate(sysUser, loginBody)
 	if err != nil {
 		global.Logger.Error("密码错误", err)
 		return nil, err
@@ -93,8 +90,7 @@ func buildSysUserResp(sysUser *system.SysUser) *response.SysUserResp {
 }
 
 func createLoginUser(sysUserResp *response.SysUserResp) *response.LoginUser {
-	p := SysPermissions{}
-	permissions, err := p.GetMenuPermission(sysUserResp)
+	permissions, err := SysPermissionSrv.GetMenuPermission(sysUserResp)
 	if err != nil {
 		global.Logger.Error(err)
 	}

@@ -1,14 +1,15 @@
-package system
+package syssrv
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-web-template/app/dao"
-	"go-web-template/app/framework"
+	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/response"
 )
 
 type SysMenuService struct{}
+
+var SysMenuSrv = new(SysMenuService)
 
 func (m *SysMenuService) selectMenuList(ctx *gin.Context) {
 
@@ -27,14 +28,9 @@ func (m *SysMenuService) selectMenuPermsByRoleId(ctx *gin.Context) {
 }
 
 // SelectMenuTreeByUserId 根据用户ID查询菜单
-func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, userId int64) (menus []*system.SysMenu, err error) {
-	sysMenuDao := dao.NewSysMenuDao(ctx)
-	t := framework.TokenService{}
-	loginUser, err := t.GetLoginUser(ctx)
-	if err != nil {
-
-	}
-	if loginUser.SysUserResp.SysUser.IsAdmin(loginUser.UserID) {
+func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, sysUser *system.SysUser) (menus []*system.SysMenu, err error) {
+	sysMenuDao := sysdao.NewSysMenuDao(ctx)
+	if sysUser.IsAdmin(sysUser.UserID) {
 		menus, err = sysMenuDao.SelectMenuTreeAll()
 	} else {
 

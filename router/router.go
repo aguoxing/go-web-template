@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"go-web-template/app/controller/common"
-	"go-web-template/app/controller/system"
+	"go-web-template/app/controller/systemctl"
 	"go-web-template/configs"
 	"go-web-template/middleware"
 )
@@ -24,7 +24,7 @@ func InitRouter() {
 	r.GET("/captcha", captcha.GetCaptcha)
 	r.POST("/verify", captcha.VerifyCaptcha)
 
-	sysLoginApi := system.SysLoginApi{}
+	sysLoginApi := systemctl.SysLoginApi{}
 	r.POST("/login", sysLoginApi.Login)
 
 	/* 系统模块 */
@@ -36,7 +36,7 @@ func InitRouter() {
 
 	// 配置管理
 	configRoutes := systemRoutes.Group("config")
-	configApi := system.SysConfigApi{}
+	configApi := systemctl.SysConfigApi{}
 	{
 		configRoutes.GET("/:configId", configApi.GetConfigById)
 		configRoutes.POST("/list", configApi.GetConfigList)
@@ -47,7 +47,7 @@ func InitRouter() {
 
 	// 用户管理
 	userRoutes := systemRoutes.Group("user")
-	userApi := system.SysUserApi{}
+	userApi := systemctl.SysUserApi{}
 	{
 		userRoutes.GET("/:userId", userApi.GetUserInfo)
 	}

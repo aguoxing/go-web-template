@@ -5,10 +5,12 @@ import (
 	"go-web-template/app/model/system/response"
 )
 
-type SysPermissions struct{}
+type SysPermissionsService struct{}
+
+var SysPermissionSrv = new(SysPermissionsService)
 
 // GetRolePermission 获取角色数据权限
-func (p *SysPermissions) GetRolePermission(sysUserResp *response.SysUserResp) ([]string, error) {
+func (p *SysPermissionsService) GetRolePermission(sysUserResp *response.SysUserResp) ([]string, error) {
 	var rolePerms []string
 	sysUser := sysUserResp.SysUser
 	if sysUser.IsAdmin(sysUser.UserID) {
@@ -20,7 +22,7 @@ func (p *SysPermissions) GetRolePermission(sysUserResp *response.SysUserResp) ([
 }
 
 // GetMenuPermission 获取菜单数据权限
-func (p *SysPermissions) GetMenuPermission(sysUserResp *response.SysUserResp) ([]string, error) {
+func (p *SysPermissionsService) GetMenuPermission(sysUserResp *response.SysUserResp) ([]string, error) {
 	var menuPerms []string
 	sysUser := sysUserResp.SysUser
 	if sysUser.IsAdmin(sysUser.UserID) {

@@ -1,11 +1,11 @@
-package system
+package systemctl
 
 import (
 	"github.com/gin-gonic/gin"
 	"go-web-template/app/common/result"
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/request"
-	"go-web-template/app/service"
+	"go-web-template/app/service/syssrv"
 	"go-web-template/global"
 	"strconv"
 )
@@ -15,7 +15,7 @@ type SysConfigApi struct{}
 // GetConfigList 获取参数列表
 func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 	//data, err := service.Srv.SysConfigService.SelectConfigList(ctx)
-	data, err := service.Srv.SysSrv.SelectConfigList(ctx)
+	data, err := syssrv.SysConfigSrv.SelectConfigList(ctx)
 	if err != nil {
 		global.Logger.Error(err)
 		return
@@ -27,7 +27,7 @@ func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
 	configId, _ := strconv.Atoi(ctx.Param("configId"))
 	//data, err := service.Srv.SysConfigService.SelectConfigById(ctx, int64(configId))
-	data, err := service.Srv.SysSrv.SysConfigService.SelectConfigById(ctx, int64(configId))
+	data, err := syssrv.SysConfigSrv.SelectConfigById(ctx, int64(configId))
 	if err != nil {
 		global.Logger.Error(err)
 		return
@@ -41,7 +41,7 @@ func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 
 	//data, err := service.Srv.SysConfigService.SelectConfigByKey(ctx, config.ConfigKey)
-	data, err := service.Srv.SysSrv.SysConfigService.SelectConfigByKey(ctx, config.ConfigKey)
+	data, err := syssrv.SysConfigSrv.SelectConfigByKey(ctx, config.ConfigKey)
 	if err != nil {
 		global.Logger.Error(err)
 		return
@@ -55,7 +55,7 @@ func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 
 	//_, err := service.Srv.SysConfigService.InsertConfig(ctx, &config)
-	_, err := service.Srv.SysSrv.SysConfigService.InsertConfig(ctx, &config)
+	_, err := syssrv.SysConfigSrv.InsertConfig(ctx, &config)
 	if err != nil {
 		global.Logger.Error(err)
 		return
@@ -69,7 +69,7 @@ func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 
 	//_, err := service.Srv.SysConfigService.UpdateConfig(ctx, &config)
-	_, err := service.Srv.SysSrv.SysConfigService.UpdateConfig(ctx, &config)
+	_, err := syssrv.SysConfigSrv.UpdateConfig(ctx, &config)
 	if err != nil {
 		global.Logger.Error(err)
 		return
@@ -83,7 +83,7 @@ func (s *SysConfigApi) RemoveConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 
 	//err := service.Srv.SysConfigService.DeleteConfigByIds(ctx, config.Ids)
-	err := service.Srv.SysSrv.SysConfigService.DeleteConfigByIds(ctx, config.Ids)
+	err := syssrv.SysConfigSrv.DeleteConfigByIds(ctx, config.Ids)
 	if err != nil {
 		global.Logger.Error(err)
 		return
