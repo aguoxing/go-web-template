@@ -5,6 +5,7 @@ import (
 	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/response"
+	"go-web-template/util"
 	"strings"
 )
 
@@ -29,11 +30,10 @@ func (m *SysMenuService) selectMenuPermsByRoleId(ctx *gin.Context) {
 }
 
 // SelectMenuTreeByUserId 根据用户ID查询菜单
-func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, sysUser *system.SysUser) ([]*system.SysMenu, error) {
+func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, sysUser *system.SysUser) (menus []*system.SysMenu, err error) {
 	sysMenuDao := sysdao.NewSysMenuDao(ctx)
-	var menus []*system.SysMenu
 	if sysUser.IsAdmin(sysUser.UserID) {
-		menus, _ = sysMenuDao.SelectMenuTreeAll()
+		menus, err = sysMenuDao.SelectMenuTreeAll()
 	} else {
 
 	}
@@ -88,23 +88,22 @@ func buildMenus(menus []*system.SysMenu) []response.RouterVo {
 	var routers []response.RouterVo
 
 	for _, menu := range menus {
-		meta := response.MetaVo{
-			Title:   menu.MenuName,
-			Icon:    menu.Icon,
-			NoCache: menu.IsCache == 1,
-			Link:    menu.Path,
-		}
 		router := response.RouterVo{
 			Hidden:    menu.Visible == "1",
 			Name:      getRouteName(menu),
 			Path:      getRouterPath(menu),
 			Component: getComponent(menu),
 			Query:     menu.Query,
-			Meta:      &meta,
+			Meta: &response.MetaVo{
+				Title:   menu.MenuName,
+				Icon:    menu.Icon,
+				NoCache: menu.IsCache == 1,
+				Link:    util.IsHttp(menu.Path),
+			},
 		}
 
 		childMenus := menu.Children
-		if len(childMenus) > 0 && menu.MenuType == "M" {
+		if len(childMenus) > 0 && childMenus != nil && menu.MenuType == "M" {
 			router.AlwaysShow = true
 			router.Redirect = "noRedirect"
 			router.Children = buildMenus(childMenus)
@@ -114,15 +113,16 @@ func buildMenus(menus []*system.SysMenu) []response.RouterVo {
 
 			var childrenList []response.RouterVo
 			var child response.RouterVo
-			routerPath := innerLinkReplaceEach(menu.Path)
-			child.Path = innerLinkReplaceEach(routerPath)
-			child.Component = "InnerLink"
-			child.Name = routerPath
+			child.Path = menu.Path
+			child.Component = menu.Component
+			routerName := util.FirstUpper(menu.MenuName)
+			child.Name = routerName
 			child.Query = menu.Query
 			child.Meta = &response.MetaVo{
-				Title: menu.MenuName,
-				Icon:  menu.Icon,
-				Link:  menu.Path,
+				Title:   menu.MenuName,
+				Icon:    menu.Icon,
+				NoCache: menu.IsCache == 1,
+				Link:    util.IsHttp(menu.Path),
 			}
 			childrenList = append(childrenList, child)
 			router.Children = childrenList
@@ -135,15 +135,17 @@ func buildMenus(menus []*system.SysMenu) []response.RouterVo {
 
 			var childrenList []response.RouterVo
 			var child response.RouterVo
-			child.Path = menu.Path
-			child.Component = menu.Component
-			child.Name = menu.Path
+
+			routerPath := innerLinkReplaceEach(menu.Path)
+			child.Path = routerPath
+			child.Component = "InnerLink"
+			routerName := util.FirstUpper(menu.MenuName)
+			child.Name = routerName
 			child.Query = menu.Query
 			child.Meta = &response.MetaVo{
-				Title:   menu.MenuName,
-				Icon:    menu.Icon,
-				Link:    menu.Path,
-				NoCache: menu.IsCache == 1,
+				Title: menu.MenuName,
+				Icon:  menu.Icon,
+				Link:  menu.Path,
 			}
 			childrenList = append(childrenList, child)
 			router.Children = childrenList
@@ -156,7 +158,7 @@ func buildMenus(menus []*system.SysMenu) []response.RouterVo {
 
 // 获取路由名称
 func getRouteName(sysMenu *system.SysMenu) string {
-	routerName := strings.ToTitle(sysMenu.Path)
+	routerName := util.FirstUpper(sysMenu.Path)
 	// 非外链并且是一级目录（类型为目录）
 	if isMenuFrame(sysMenu) {
 		routerName = ""
@@ -184,7 +186,7 @@ func getRouterPath(sysMenu *system.SysMenu) string {
 // 获取组件信息
 func getComponent(sysMenu *system.SysMenu) string {
 	component := "Layout"
-	if sysMenu.Component != "" && isMenuFrame(sysMenu) {
+	if sysMenu.Component != "" && !isMenuFrame(sysMenu) {
 		component = sysMenu.Component
 	} else if sysMenu.Component == "" && sysMenu.ParentID != 0 && isInnerLink(sysMenu) {
 		component = "InnerLink"

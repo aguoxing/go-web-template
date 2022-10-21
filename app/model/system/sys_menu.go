@@ -32,7 +32,7 @@ type SysMenu struct {
 	UpdateTime time.Time  `gorm:"column:update_time;type:int unsigned;autoUpdateTime" json:"updateTime"`  // 更新时间
 	Remark     string     `gorm:"column:remark;type:varchar(500)" json:"remark"`                          // 备注
 	Children   []*SysMenu `gorm:"-" json:"children"`                                                      // 子菜单
-	ArrIdx     int        `gorm:"-" json:"arrIdx"`
+	ArrIdx     int        `gorm:"-" json:"arrIdx"`                                                        // 临时变量 用于生成tree
 }
 
 // TableName SysMenu's table name

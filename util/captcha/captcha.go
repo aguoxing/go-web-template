@@ -24,8 +24,8 @@ func CaptMake() (id, b64s string, err error) {
 	//chinese中文验证码
 	captchaConfig := base64Captcha.DriverString{
 		Length:     4,                                      // 验证码长度
-		Height:     30,                                     // 验证码图片高度
-		Width:      60,                                     // 验证码图片宽度
+		Height:     38,                                     // 验证码图片高度
+		Width:      105,                                    // 验证码图片宽度
 		Source:     "abcdefghijklmnopqrstuvwxyz1234567890", // 会出现字符
 		NoiseCount: 0,                                      // 干扰词数量
 		//DotCount:        0,      // 干扰点数量
