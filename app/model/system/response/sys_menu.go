@@ -29,15 +29,15 @@ type SysMenu struct {
 
 // RouterVo 路由配置信息
 type RouterVo struct {
-	Name       string      `json:"name"`       // 路由名字
-	Path       string      `json:"path"`       // 路由地址
-	Hidden     bool        `json:"hidden"`     // 是否隐藏路由，当设置 true 的时候该路由不会再侧边栏出现
-	Redirect   string      `json:"redirect"`   // 重定向地址，当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
-	Component  string      `json:"component"`  // 组件地址
-	Query      string      `json:"query"`      // 路由参数：如 {"id": 1, "name": "ry"}
-	AlwaysShow bool        `json:"alwaysShow"` // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
-	Meta       *MetaVo     `json:"meta"`       // 其他元素
-	Children   []*RouterVo `json:"children"`   // 子路由
+	Name       string     `json:"name"`       // 路由名字
+	Path       string     `json:"path"`       // 路由地址
+	Hidden     bool       `json:"hidden"`     // 是否隐藏路由，当设置 true 的时候该路由不会再侧边栏出现
+	Redirect   string     `json:"redirect"`   // 重定向地址，当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
+	Component  string     `json:"component"`  // 组件地址
+	Query      string     `json:"query"`      // 路由参数：如 {"id": 1, "name": "ry"}
+	AlwaysShow bool       `json:"alwaysShow"` // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+	Meta       *MetaVo    `json:"meta"`       // 其他元素
+	Children   []RouterVo `json:"children"`   // 子路由
 }
 
 // MetaVo 路由显示信息

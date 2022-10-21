@@ -41,7 +41,7 @@ func (s *SysLoginApi) GetUserInfo(ctx *gin.Context) {
 	// todo 权限 set
 	//p.GetMenuPermission(loginUser.SysUserResp)
 	userInfo := &response.UserInfo{
-		SysUser:     loginUser.SysUserResp.SysUser,
+		User:        loginUser.SysUserResp.SysUser,
 		Roles:       loginUser.SysUserResp.Roles,
 		Permissions: loginUser.Permissions,
 	}

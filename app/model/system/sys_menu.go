@@ -31,7 +31,8 @@ type SysMenu struct {
 	UpdateBy   string     `gorm:"column:update_by;type:varchar(64)" json:"updateBy"`                      // 更新者
 	UpdateTime time.Time  `gorm:"column:update_time;type:int unsigned;autoUpdateTime" json:"updateTime"`  // 更新时间
 	Remark     string     `gorm:"column:remark;type:varchar(500)" json:"remark"`                          // 备注
-	Children   []*SysMenu `json:"children"`                                                               // 子菜单
+	Children   []*SysMenu `gorm:"-" json:"children"`                                                      // 子菜单
+	ArrIdx     int        `gorm:"-" json:"arrIdx"`
 }
 
 // TableName SysMenu's table name

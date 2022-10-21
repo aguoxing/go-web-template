@@ -17,7 +17,7 @@ func NewSysMenuDao(ctx context.Context) *SysMenuDao {
 
 // SelectMenuTreeAll 查询所有目录M、菜单C
 func (dao *SysMenuDao) SelectMenuTreeAll() (menus []*system.SysMenu, err error) {
-	err = dao.DB.Model(&system.SysMenu{}).Where("menu_type in (M,C)?").Where("status = ?", 0).Order("parent_id,order_num").Error
+	err = dao.DB.Model(&system.SysMenu{}).Where("menu_type in ('M','C')").Where("status = ?", 0).Order("parent_id,order_num").Find(&menus).Error
 	return
 }
 

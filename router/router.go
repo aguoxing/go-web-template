@@ -12,6 +12,7 @@ func InitRouter() {
 	r := gin.New()
 	// logrus 日志
 	r.Use(middleware.Logger())
+	r.Use(gin.Recovery())
 
 	//r.GET("/", index.Index)
 	//r.GET("/login", index.Login)
@@ -21,11 +22,13 @@ func InitRouter() {
 	//r.GET("/404", errorc.NotFound)
 	//r.GET("/403", "")
 	captcha := common.CaptchaHandler{}
-	r.GET("/captcha", captcha.GetCaptcha)
+	r.GET("/captchaImage", captcha.GetCaptcha)
 	r.POST("/verify", captcha.VerifyCaptcha)
 
 	sysLoginApi := systemctl.SysLoginApi{}
 	r.POST("/login", sysLoginApi.Login)
+	r.GET("/getInfo", sysLoginApi.GetUserInfo)
+	r.GET("/getRouters", sysLoginApi.GetRouters)
 
 	/* 系统模块 */
 	systemRoutes := r.Group("system")

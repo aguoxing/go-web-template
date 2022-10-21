@@ -1,26 +1,33 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"go-web-template/app/model/system"
-	"go-web-template/util"
+	"strings"
 )
 
 func main() {
-	p, e := util.PasswordHash("123456")
-	if e != nil {
-		fmt.Println(e)
-	}
-	fmt.Println(p)
+	/*	menuMap := make(map[int64]system.SysMenu)
+		var m []system.SysMenu
+		menu := system.SysMenu{
+			MenuID:   1,
+			MenuName: "test",
+		}
 
-	test := "{\"action\":\"reponse_common_policy_config\",\"retCode\":0,\"common_policy_config\":[[3,15],\"1234\"]}"
+		for i := 0; i < 10; i++ {
+			m = append(m, menu)
+		}
 
-	var config *system.SysUser
+		fmt.Println(m)
 
-	err := json.Unmarshal([]byte(test), &config)
+		for _, menu := range m {
+			menuMap[menu.MenuID] = menu
+		}*/
 
-	if err != nil {
-		//logs.Info(err)
-	}
+	str := "http://www.baidu.com"
+
+	str1 := strings.Replace(str, "http://", "", 1)
+	str2 := strings.Replace(str1, "https://", "", 1)
+	str3 := strings.Replace(str2, "www.", "", 1)
+	str4 := strings.Replace(str3, ".", "/", 1)
+	fmt.Println(str4)
 }

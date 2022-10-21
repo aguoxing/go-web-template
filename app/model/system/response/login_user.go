@@ -33,7 +33,7 @@ type LoginUser struct {
 
 // UserInfo 返回前端的
 type UserInfo struct {
-	SysUser     *system.SysUser   `json:"user"`
+	User        *system.SysUser   `json:"user"`
 	Roles       []*system.SysRole `json:"roles"`
 	Permissions []string          `json:"permissions"`
 }

@@ -5,6 +5,7 @@ import (
 	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/response"
+	"strings"
 )
 
 type SysMenuService struct{}
@@ -28,10 +29,11 @@ func (m *SysMenuService) selectMenuPermsByRoleId(ctx *gin.Context) {
 }
 
 // SelectMenuTreeByUserId 根据用户ID查询菜单
-func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, sysUser *system.SysUser) (menus []*system.SysMenu, err error) {
+func (m *SysMenuService) SelectMenuTreeByUserId(ctx *gin.Context, sysUser *system.SysUser) ([]*system.SysMenu, error) {
 	sysMenuDao := sysdao.NewSysMenuDao(ctx)
+	var menus []*system.SysMenu
 	if sysUser.IsAdmin(sysUser.UserID) {
-		menus, err = sysMenuDao.SelectMenuTreeAll()
+		menus, _ = sysMenuDao.SelectMenuTreeAll()
 	} else {
 
 	}
@@ -42,15 +44,16 @@ func (m *SysMenuService) SelectMenuListByRoleId(ctx *gin.Context) {
 
 }
 
-func (m *SysMenuService) GetBuildMenus(menus []*system.SysMenu) []*response.RouterVo {
+func (m *SysMenuService) GetBuildMenus(menus []*system.SysMenu) []response.RouterVo {
 	return buildMenus(menus)
 }
 
 // 构建菜单树
 func buildTree(menus []*system.SysMenu) []*system.SysMenu {
-	var mapTemp map[int64]*system.SysMenu
-	for _, menu := range menus {
-		mapTemp[menu.MenuID] = menu
+	menuMap := make(map[int64]*system.SysMenu)
+	for i, menu := range menus {
+		menu.ArrIdx = i
+		menuMap[menu.MenuID] = menu
 	}
 
 	var resList []*system.SysMenu
@@ -58,22 +61,22 @@ func buildTree(menus []*system.SysMenu) []*system.SysMenu {
 
 	for _, menu := range menus {
 
-		parent, ok := mapTemp[menu.ParentID]
+		parent, ok := menuMap[menu.ParentID]
 
-		if ok && parent != nil {
-			if parent.Children != nil {
-				childList = parent.Children
-				if childList != nil {
+		if ok {
+			if len(parent.Children) == 0 {
+				childList = menus[parent.ArrIdx].Children
+				if childList == nil {
 					childList = []*system.SysMenu{}
 				}
 				childList = append(childList, menu)
-				parent.Children = childList
+				menus[parent.ArrIdx].Children = childList
 			} else {
-				parent.Children = append(parent.Children, menu)
+				menus[parent.ArrIdx].Children = append(menus[parent.ArrIdx].Children, menu)
 			}
 		}
 
-		if parent == nil || menu.ParentID == 0 {
+		if menu.ParentID == 0 {
 			resList = append(resList, menu)
 		}
 	}
@@ -81,8 +84,8 @@ func buildTree(menus []*system.SysMenu) []*system.SysMenu {
 }
 
 // BuildMenus 构建前端路由所需要的菜单
-func buildMenus(menus []*system.SysMenu) []*response.RouterVo {
-	var routers []*response.RouterVo
+func buildMenus(menus []*system.SysMenu) []response.RouterVo {
+	var routers []response.RouterVo
 
 	for _, menu := range menus {
 		meta := response.MetaVo{
@@ -91,7 +94,7 @@ func buildMenus(menus []*system.SysMenu) []*response.RouterVo {
 			NoCache: menu.IsCache == 1,
 			Link:    menu.Path,
 		}
-		router := &response.RouterVo{
+		router := response.RouterVo{
 			Hidden:    menu.Visible == "1",
 			Name:      getRouteName(menu),
 			Path:      getRouterPath(menu),
@@ -109,8 +112,8 @@ func buildMenus(menus []*system.SysMenu) []*response.RouterVo {
 			var m *response.MetaVo = nil
 			router.Meta = m
 
-			var childrenList []*response.RouterVo
-			var child *response.RouterVo
+			var childrenList []response.RouterVo
+			var child response.RouterVo
 			routerPath := innerLinkReplaceEach(menu.Path)
 			child.Path = innerLinkReplaceEach(routerPath)
 			child.Component = "InnerLink"
@@ -130,8 +133,8 @@ func buildMenus(menus []*system.SysMenu) []*response.RouterVo {
 			}
 			router.Path = menu.Path
 
-			var childrenList []*response.RouterVo
-			var child *response.RouterVo
+			var childrenList []response.RouterVo
+			var child response.RouterVo
 			child.Path = menu.Path
 			child.Component = menu.Component
 			child.Name = menu.Path
@@ -153,35 +156,64 @@ func buildMenus(menus []*system.SysMenu) []*response.RouterVo {
 
 // 获取路由名称
 func getRouteName(sysMenu *system.SysMenu) string {
-	return ""
+	routerName := strings.ToTitle(sysMenu.Path)
+	// 非外链并且是一级目录（类型为目录）
+	if isMenuFrame(sysMenu) {
+		routerName = ""
+	}
+	return routerName
 }
 
 // 获取路由地址
 func getRouterPath(sysMenu *system.SysMenu) string {
-	return ""
+	routerPath := sysMenu.Path
+	// 内链打开外网方式
+	if sysMenu.ParentID != 0 && isInnerLink(sysMenu) {
+		routerPath = innerLinkReplaceEach(routerPath)
+	}
+	// 非外链并且是一级目录（类型为目录）
+	if sysMenu.ParentID == 0 && sysMenu.MenuType == "M" && sysMenu.IsFrame == 1 {
+		routerPath = "/" + sysMenu.Path
+	} else if isMenuFrame(sysMenu) {
+		// 非外链并且是一级目录（类型为菜单）
+		routerPath = "/"
+	}
+	return routerPath
 }
 
 // 获取组件信息
 func getComponent(sysMenu *system.SysMenu) string {
-	return ""
+	component := "Layout"
+	if sysMenu.Component != "" && isMenuFrame(sysMenu) {
+		component = sysMenu.Component
+	} else if sysMenu.Component == "" && sysMenu.ParentID != 0 && isInnerLink(sysMenu) {
+		component = "InnerLink"
+	} else if sysMenu.Component == "" && isParentView(sysMenu) {
+		component = "ParentView"
+	}
+	return component
 }
 
 // 是否为菜单内部跳转
 func isMenuFrame(sysMenu *system.SysMenu) bool {
-	return false
+	return sysMenu.ParentID == 0 && sysMenu.MenuType == "C" && sysMenu.IsFrame == 1
 }
 
 // 是否为内链组件
 func isInnerLink(sysMenu *system.SysMenu) bool {
-	return false
+	return sysMenu.IsFrame == 1
 }
 
 // 是否为parent_view组件
 func isParentView(sysMenu *system.SysMenu) bool {
-	return false
+	return sysMenu.ParentID != 0 && sysMenu.MenuType == "M"
 }
 
 // 内链域名特殊字符替换
 func innerLinkReplaceEach(str string) string {
-	return ""
+	str1 := strings.Replace(str, "http://", "", 1)
+	str2 := strings.Replace(str1, "https://", "", 1)
+	str3 := strings.Replace(str2, "www.", "", 1)
+	str4 := strings.Replace(str3, ".", "/", 1)
+	return str4
 }

@@ -9,7 +9,7 @@ import (
 // CaptchaResult 存储验证码的结构
 type CaptchaResult struct {
 	Id         string `json:"id"`
-	Base64Blob string `json:"base_64_blob"`
+	Base64Blob string `json:"base64Blob"`
 	//VerifyValue string `json:"code"`
 }
 

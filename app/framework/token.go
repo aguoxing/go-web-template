@@ -9,6 +9,7 @@ import (
 	"go-web-template/configs"
 	"go-web-template/global"
 	"go-web-template/util"
+	"strings"
 	"time"
 )
 
@@ -21,14 +22,14 @@ var expireTime = 30 * time.Minute
 const MillisMinuteTen = 20 * time.Minute
 
 func (t *TokenService) GetLoginUser(ctx *gin.Context) (loginUser *response.LoginUser, err error) {
-	token := ctx.GetHeader(configs.AppConfig.JWT.Header)
+	token := getToken(ctx)
 	if token != "" {
 		claims, err := util.ParseToken(token)
 		if err != nil {
 			global.Logger.Error(err)
 		}
 		userKey := "login_tokens:" + claims.LoginUserKey
-		jsonData := global.Redis.Get(context.Background(), userKey).String()
+		jsonData, _ := global.Redis.Get(context.Background(), userKey).Result()
 		err = json.Unmarshal([]byte(jsonData), &loginUser)
 		if err != nil {
 			global.Logger.Error(err)
@@ -90,4 +91,10 @@ func refreshToken(user *response.LoginUser) {
 	if err != nil {
 		global.Logger.Error(err)
 	}
+}
+
+func getToken(ctx *gin.Context) string {
+	token := ctx.GetHeader(configs.AppConfig.JWT.Header)
+	t := strings.Replace(token, "Bearer ", "", 1)
+	return t
 }
