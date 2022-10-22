@@ -3,6 +3,7 @@ package framework
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go-web-template/app/model/system/response"
@@ -40,18 +41,26 @@ func (t *TokenService) GetLoginUser(ctx *gin.Context) (loginUser *response.Login
 	return nil, nil
 }
 
+// Logout 退出登录
+func (t *TokenService) Logout(ctx *gin.Context) error {
+	token := getToken(ctx)
+	if token != "" {
+		claims, err := util.ParseToken(token)
+		if err != nil {
+			global.Logger.Error(err)
+		}
+		err = delLoginUser(claims.LoginUserKey)
+		// todo 记录登录信息
+
+		return err
+	}
+	return errors.New("token为空")
+}
+
 // SetLoginUser 设置用户身份信息
 func (t *TokenService) SetLoginUser(user *response.LoginUser) {
 	if user != nil && user.UserKey != "" {
 		refreshToken(user)
-	}
-}
-
-// DelLoginUser 删除用户身份信息
-func (t *TokenService) DelLoginUser(userKey string) {
-	if userKey != "" {
-		uk := "login_tokens:" + userKey
-		global.Redis.Del(context.Background(), uk)
 	}
 }
 
@@ -97,4 +106,14 @@ func getToken(ctx *gin.Context) string {
 	token := ctx.GetHeader(configs.AppConfig.JWT.Header)
 	t := strings.Replace(token, "Bearer ", "", 1)
 	return t
+}
+
+// delLoginUser 删除用户身份信息
+func delLoginUser(userKey string) error {
+	if userKey != "" {
+		uk := "login_tokens:" + userKey
+		err := global.Redis.Del(context.Background(), uk).Err()
+		return err
+	}
+	return errors.New("userKey为空")
 }

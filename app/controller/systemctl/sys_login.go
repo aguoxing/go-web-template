@@ -28,6 +28,16 @@ func (s *SysLoginApi) Login(ctx *gin.Context) {
 	}
 }
 
+// Logout 退出登录
+func (s *SysLoginApi) Logout(ctx *gin.Context) {
+	err := framework.TokenSrv.Logout(ctx)
+	if err != nil {
+		result.Fail(ctx)
+	} else {
+		result.Ok(ctx)
+	}
+}
+
 // GetUserInfo 获取当前登录用户信息
 func (s *SysLoginApi) GetUserInfo(ctx *gin.Context) {
 	//t := framework.TokenService{}

@@ -27,22 +27,23 @@ func InitRouter() {
 
 	sysLoginApi := systemctl.SysLoginApi{}
 	r.POST("/login", sysLoginApi.Login)
+	r.POST("/logout", sysLoginApi.Logout)
 	r.GET("/getInfo", sysLoginApi.GetUserInfo)
 	r.GET("/getRouters", sysLoginApi.GetRouters)
 
 	/* 系统模块 */
 	systemRoutes := r.Group("system")
 	// jwt 认证
-	//systemRoutes.Use(middleware.JWT())
+	systemRoutes.Use(middleware.JWT())
 	// auth 鉴权
-	systemRoutes.Use(middleware.Auth())
+	//systemRoutes.Use(middleware.Auth())
 
 	// 配置管理
 	configRoutes := systemRoutes.Group("config")
 	configApi := systemctl.SysConfigApi{}
 	{
 		configRoutes.GET("/:configId", configApi.GetConfigById)
-		configRoutes.POST("/list", configApi.GetConfigList)
+		configRoutes.POST("/list", middleware.Auth("system:config:list"), configApi.GetConfigList)
 		configRoutes.POST("/add", configApi.AddConfig)
 		configRoutes.PUT("/update", configApi.EditConfig)
 		configRoutes.DELETE("/delete", configApi.RemoveConfig)
