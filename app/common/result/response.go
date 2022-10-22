@@ -9,7 +9,7 @@ import (
 
 type Response struct {
 	Code int         `json:"code"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"data,omitempty"`
 	Msg  string      `json:"msg"`
 }
 
@@ -47,4 +47,8 @@ func FailWithMessage(message string, c *gin.Context) {
 
 func FailWithDetailed(data interface{}, message string, c *gin.Context) {
 	Result(e.ERROR, data, message, c)
+}
+
+func Forbidden(c *gin.Context) {
+	Result(e.FORBIDDEN, map[string]interface{}{}, "当前操作没有权限", c)
 }

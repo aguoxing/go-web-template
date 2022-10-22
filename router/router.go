@@ -43,7 +43,7 @@ func InitRouter() {
 	configApi := systemctl.SysConfigApi{}
 	{
 		configRoutes.GET("/:configId", configApi.GetConfigById)
-		configRoutes.POST("/list", middleware.Auth("system:config:list"), configApi.GetConfigList)
+		configRoutes.POST("/list", middleware.HasPerm("system:config:query"), configApi.GetConfigList)
 		configRoutes.POST("/add", configApi.AddConfig)
 		configRoutes.PUT("/update", configApi.EditConfig)
 		configRoutes.DELETE("/delete", configApi.RemoveConfig)
