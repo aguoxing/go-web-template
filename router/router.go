@@ -49,6 +49,27 @@ func InitRouter() {
 		configRoutes.DELETE("/delete", configApi.RemoveConfig)
 	}
 
+	// 字典管理
+	dictRoutes := systemRoutes.Group("dict")
+	dictDataApi := systemctl.SysDictDataApi{}
+	dictTypeApi := systemctl.SysDictTypeApi{}
+	{
+		dictRoutes.POST("/data/list", dictDataApi.GetDictDataList)
+		dictRoutes.GET("/data/type/:dictType", dictDataApi.GetDictDataListByDictType)
+		dictRoutes.GET("/data/:dictCode", dictDataApi.GetDictData)
+		dictRoutes.POST("/data", dictDataApi.AddDictData)
+		dictRoutes.PUT("/data", dictDataApi.UpdateDictData)
+		dictRoutes.DELETE("/data", dictDataApi.DeleteDictData)
+
+		dictRoutes.POST("/type/list", dictTypeApi.GetDictTypeList)
+		dictRoutes.GET("/type/:dictId", dictTypeApi.GetDictType)
+		dictRoutes.POST("/type", dictTypeApi.AddDictType)
+		dictRoutes.PUT("/type", dictTypeApi.UpdateDictType)
+		dictRoutes.DELETE("/type", dictTypeApi.DeleteDictType)
+		dictRoutes.DELETE("/refreshCache", dictTypeApi.RefreshCache)
+		dictRoutes.GET("/optionSelect", dictTypeApi.OptionSelect)
+	}
+
 	// 用户管理
 	userRoutes := systemRoutes.Group("user")
 	userApi := systemctl.SysUserApi{}

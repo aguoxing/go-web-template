@@ -4,10 +4,10 @@ type Pagination struct {
 	PageNum    int         `json:"PageNum,omitempty" form:"PageNum"`
 	PageSize   int         `json:"pageSize,omitempty" form:"pageSize"`
 	Sort       string      `json:"sort,omitempty" form:"sort"`
-	TotalPages int         `json:"total_pages"`
+	TotalPages int         `json:"total_pages,omitempty"`
 	Code       int         `json:"code"`
 	Msg        string      `json:"msg"`
-	Total      int64       `json:"total"`
+	Total      int64       `json:"total,omitempty"`
 	Rows       interface{} `json:"rows"`
 }
 
