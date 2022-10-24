@@ -49,22 +49,22 @@ func (dao *SysDictTypeDao) SelectList(dictType request.SysDictType) (p *page.Pag
 	return p, err
 }
 
-func (dao *SysDictTypeDao) SelectById(dictId int64) (DictType *system.SysDictType, err error) {
-	err = dao.DB.Where("dict_id = ?", dictId).Find(&DictType).Error
+func (dao *SysDictTypeDao) SelectById(dictId int64) (dictType *system.SysDictType, err error) {
+	err = dao.DB.Where("dict_id = ?", dictId).Find(&dictType).Error
 	if err != nil {
 		return nil, err
 	}
 	return
 }
 
-func (dao *SysDictTypeDao) Insert(DictType *system.SysDictType) error {
-	return dao.DB.Create(DictType).Error
+func (dao *SysDictTypeDao) Insert(dictType *system.SysDictType) error {
+	return dao.DB.Create(dictType).Error
 }
 
-func (dao *SysDictTypeDao) UpdateById(DictType *system.SysDictType) error {
-	return dao.DB.Save(DictType).Error
+func (dao *SysDictTypeDao) UpdateById(dictType *system.SysDictType) error {
+	return dao.DB.Save(dictType).Error
 }
 
 func (dao *SysDictTypeDao) DeleteByIds(ids []int64) error {
-	return dao.DB.Where("dict_id in (?)", ids).Delete(system.SysDictType{}).Error
+	return dao.DB.Where("dict_id in (?)", ids).Delete(&system.SysDictType{}).Error
 }

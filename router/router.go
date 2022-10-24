@@ -42,11 +42,13 @@ func InitRouter() {
 	configRoutes := systemRoutes.Group("config")
 	configApi := systemctl.SysConfigApi{}
 	{
+		configRoutes.POST("/list", configApi.GetConfigList)
 		configRoutes.GET("/:configId", configApi.GetConfigById)
-		configRoutes.POST("/list", middleware.HasPerm("system:config:query"), configApi.GetConfigList)
-		configRoutes.POST("/add", configApi.AddConfig)
-		configRoutes.PUT("/update", configApi.EditConfig)
-		configRoutes.DELETE("/delete", configApi.RemoveConfig)
+		configRoutes.GET("/configKey/:configKey", configApi.GetConfigKey)
+		configRoutes.POST("/", configApi.AddConfig)
+		configRoutes.PUT("/", configApi.EditConfig)
+		configRoutes.DELETE("/", configApi.RemoveConfig)
+		configRoutes.DELETE("/refreshCache", configApi.RefreshCache)
 	}
 
 	// 字典管理

@@ -66,5 +66,5 @@ func (dao *SysDictDataDao) UpdateById(dictData *system.SysDictData) error {
 }
 
 func (dao *SysDictDataDao) DeleteByIds(ids []int64) error {
-	return dao.DB.Where("dict_code in (?)", ids).Delete(system.SysDictData{}).Error
+	return dao.DB.Where("dict_code in (?)", ids).Delete(&system.SysDictData{}).Error
 }
