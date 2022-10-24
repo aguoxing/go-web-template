@@ -77,7 +77,7 @@ func (s *SysConfigApi) RemoveConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.DeleteSysConfigByIds(ctx, config.Ids)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}

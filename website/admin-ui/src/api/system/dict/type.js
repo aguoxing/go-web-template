@@ -38,7 +38,7 @@ export function updateType(data) {
 // 删除字典类型
 export function delType(data) {
   return request({
-    url: '/system/dict/type/',
+    url: '/system/dict/type',
     method: 'delete',
     data: data
   })

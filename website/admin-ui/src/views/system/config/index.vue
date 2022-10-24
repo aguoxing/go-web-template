@@ -307,8 +307,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const configIds = row.configId || this.ids;
-      this.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function() {
+      let configIds = [];
+      configIds = row.configId === undefined ? configIds.push(row.configId) : this.ids
+      this.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(() => {
           return delConfig({ids: configIds});
         }).then(() => {
           this.getList();

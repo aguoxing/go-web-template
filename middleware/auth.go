@@ -11,18 +11,17 @@ import (
 func HasPerm(perms string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		loginUser, _ := framework.TokenSrv.GetLoginUser(c)
+		loginUser, err := framework.TokenSrv.GetLoginUser(c)
 
-		if loginUser == nil || len(loginUser.Permissions) < 0 {
-			global.Logger.Warn("没有权限")
+		if err != nil {
+			global.Logger.Error(err)
 			c.Abort()
-			result.Forbidden(c)
 			return
 		}
 		if hasPermissions(loginUser.Permissions, perms) {
 			c.Next()
 		} else {
-			global.Logger.Warn("没有权限")
+			global.Logger.Error("没有权限")
 			c.Abort()
 			result.Forbidden(c)
 			return
@@ -46,7 +45,7 @@ func HasRole(role string) gin.HandlerFunc {
 			return
 		}
 
-		for _, sysRole := range loginUser.SysUserResp.Roles {
+		for _, sysRole := range loginUser.SysUserResp.SysRoles {
 			roleKey := sysRole.RoleKey
 			if roleKey == "admin" || role == roleKey {
 				c.Next()

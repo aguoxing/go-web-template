@@ -25,6 +25,7 @@ func (s *SysLoginService) Login(ctx *gin.Context, loginBody *request.LoginBody) 
 		if !r {
 			err := errors.New("验证码错误")
 			global.Logger.Error("验证码错误", err)
+			return "", err
 		}
 	}
 	loginUser, err := loadUserByUsername(ctx, loginBody)
@@ -75,7 +76,7 @@ func loadUserByUsername(ctx *gin.Context, loginBody *request.LoginBody) (*respon
 
 func buildSysUserResp(sysUser *system.SysUser) *response.SysUserResp {
 	// todo
-	var roles []*system.SysRole
+	roles := []string{"admin"}
 	roleIds := []int64{1}
 	postIds := []int64{1}
 	sysUserResp := &response.SysUserResp{

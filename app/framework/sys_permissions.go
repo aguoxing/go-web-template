@@ -28,11 +28,11 @@ func (p *SysPermissionsService) GetMenuPermission(sysUserResp *response.SysUserR
 	if sysUser.IsAdmin(sysUser.UserID) {
 		menuPerms = append(menuPerms, "*:*:*")
 	} else {
-		roles := sysUserResp.Roles
-		if roles != nil && len(roles) > 0 {
+		roleIds := sysUserResp.RoleIds
+		if roleIds != nil && len(roleIds) > 0 {
 			// 多角色设置permissions属性，以便数据权限匹配权限
-			for i, role := range roles {
-				fmt.Println(i, role.RoleID)
+			for i, roleId := range roleIds {
+				fmt.Println(i, roleId)
 				//Set<String> rolePerms = menuService.selectMenuPermsByRoleId(role.getRoleId());
 				//role.setPermissions(rolePerms);
 				//perms.addAll(rolePerms);

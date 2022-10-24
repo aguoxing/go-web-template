@@ -25,9 +25,11 @@ const MillisMinuteTen = 20 * time.Minute
 func (t *TokenService) GetLoginUser(ctx *gin.Context) (loginUser *response.LoginUser, err error) {
 	token := getToken(ctx)
 	if token != "" {
-		claims, err := util.ParseToken(token)
+		claims := &util.Claims{}
+		claims, err = util.ParseToken(token)
 		if err != nil {
 			global.Logger.Error(err)
+			return nil, err
 		}
 		userKey := "login_tokens:" + claims.LoginUserKey
 		jsonData, _ := global.Redis.Get(context.Background(), userKey).Result()
@@ -46,8 +48,9 @@ func (t *TokenService) Logout(ctx *gin.Context) error {
 	token := getToken(ctx)
 	if token != "" {
 		claims, err := util.ParseToken(token)
-		if err != nil {
+		if err != nil && claims == nil {
 			global.Logger.Error(err)
+			return nil
 		}
 		err = delLoginUser(claims.LoginUserKey)
 		// todo 记录登录信息

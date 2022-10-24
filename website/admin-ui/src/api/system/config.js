@@ -5,7 +5,7 @@ export function listConfig(data) {
   return request({
     url: '/system/config/list',
     method: 'post',
-    params: data
+    data: data
   })
 }
 
@@ -46,7 +46,7 @@ export function updateConfig(data) {
 // 删除参数配置
 export function delConfig(data) {
   return request({
-    url: '/system/config/',
+    url: '/system/config',
     method: 'delete',
     data: data
   })

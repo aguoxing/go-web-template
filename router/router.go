@@ -14,13 +14,6 @@ func InitRouter() {
 	r.Use(middleware.Logger())
 	r.Use(gin.Recovery())
 
-	//r.GET("/", index.Index)
-	//r.GET("/login", index.Login)
-	//r.POST("/checklogin", index.CheckLogin)
-	//r.GET("/captchaImage", index.CaptchaImage)
-	//r.GET("/500", errorc.Error)
-	//r.GET("/404", errorc.NotFound)
-	//r.GET("/403", "")
 	captcha := common.CaptchaHandler{}
 	r.GET("/captchaImage", captcha.GetCaptcha)
 	r.POST("/verify", captcha.VerifyCaptcha)
@@ -45,9 +38,9 @@ func InitRouter() {
 		configRoutes.POST("/list", configApi.GetConfigList)
 		configRoutes.GET("/:configId", configApi.GetConfigById)
 		configRoutes.GET("/configKey/:configKey", configApi.GetConfigKey)
-		configRoutes.POST("/", configApi.AddConfig)
-		configRoutes.PUT("/", configApi.EditConfig)
-		configRoutes.DELETE("/", configApi.RemoveConfig)
+		configRoutes.POST("", configApi.AddConfig)
+		configRoutes.PUT("", configApi.EditConfig)
+		configRoutes.DELETE("", configApi.RemoveConfig)
 		configRoutes.DELETE("/refreshCache", configApi.RefreshCache)
 	}
 

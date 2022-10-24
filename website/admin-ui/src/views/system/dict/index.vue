@@ -309,8 +309,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const dictIds = row.dictId || this.ids;
-      this.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(function() {
+      let dictIds = [];
+      dictIds = row.dictId === undefined ? dictIds.push(row.dictId) : this.ids
+      this.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(() => {
         return delType({ids: dictIds});
       }).then(() => {
         this.getList();
