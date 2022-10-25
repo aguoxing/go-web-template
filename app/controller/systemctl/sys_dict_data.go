@@ -6,7 +6,6 @@ import (
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/request"
 	"go-web-template/app/service/syssrv"
-	"go-web-template/global"
 	"strconv"
 )
 
@@ -18,7 +17,7 @@ func (*SysDictDataApi) GetDictDataList(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	data, err := syssrv.SysDictDataSrv.SelectDictDataList(ctx, params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -30,7 +29,7 @@ func (*SysDictDataApi) GetDictDataListByDictType(ctx *gin.Context) {
 	params.DictType = ctx.Param("dictType")
 	data, err := syssrv.SysDictDataSrv.SelectDictDataList(ctx, params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -40,7 +39,7 @@ func (*SysDictDataApi) GetDictData(ctx *gin.Context) {
 	dictCode, _ := strconv.Atoi(ctx.Param("dictCode"))
 	data, err := syssrv.SysDictDataSrv.SelectDictDataById(ctx, int64(dictCode))
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -51,7 +50,7 @@ func (*SysDictDataApi) AddDictData(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictDataSrv.AddDictData(ctx, &params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
@@ -62,7 +61,7 @@ func (*SysDictDataApi) UpdateDictData(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictDataSrv.UpdateDictData(ctx, &params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
@@ -73,8 +72,7 @@ func (*SysDictDataApi) DeleteDictData(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictDataSrv.DeleteDictDataByIds(ctx, params.Ids)
 	if err != nil {
-		global.Logger.Error(err)
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}

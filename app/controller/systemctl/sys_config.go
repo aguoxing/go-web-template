@@ -18,7 +18,7 @@ func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	data, err := syssrv.SysConfigSrv.SelectSysConfigList(ctx, &params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -29,7 +29,7 @@ func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
 	configId, _ := strconv.Atoi(ctx.Param("configId"))
 	data, err := syssrv.SysConfigSrv.SelectSysConfigById(ctx, int64(configId))
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -41,7 +41,7 @@ func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 	data, err := syssrv.SysConfigSrv.SelectSysConfigByKey(ctx, config.ConfigKey)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -53,7 +53,7 @@ func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.AddSysConfig(ctx, &config)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
@@ -65,7 +65,7 @@ func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.UpdateSysConfig(ctx, &config)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}

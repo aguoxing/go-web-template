@@ -58,7 +58,7 @@ func (s *SysDictDataService) UpdateDictData(ctx *gin.Context, dictData *system.S
 }
 
 // DeleteDictDataByIds 单个删除/批量删除
-func (s *SysDictDataService) DeleteDictDataByIds(ctx *gin.Context, ids []int64) interface{} {
+func (s *SysDictDataService) DeleteDictDataByIds(ctx *gin.Context, ids []int64) error {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	err := sysDictDataDao.DeleteByIds(ids)
 	if err != nil {

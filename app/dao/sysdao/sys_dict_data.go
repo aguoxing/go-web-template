@@ -49,6 +49,11 @@ func (dao *SysDictDataDao) SelectList(dictData request.SysDictData) (p *page.Pag
 	return p, err
 }
 
+func (dao *SysDictDataDao) SelectAll() (list []system.SysDictData, err error) {
+	err = dao.DB.Where("status = 0").Order("dict_sort asc").Find(&list).Error
+	return
+}
+
 func (dao *SysDictDataDao) SelectById(dictCode int64) (dictData *system.SysDictData, err error) {
 	err = dao.DB.Where("dict_code = ?", dictCode).Find(&dictData).Error
 	if err != nil {

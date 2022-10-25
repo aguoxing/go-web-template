@@ -310,7 +310,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       let dictIds = [];
-      dictIds = row.dictId === undefined ? dictIds.push(row.dictId) : this.ids
+      if (row.dictId !== undefined) {
+         dictIds.push(row.dictId)
+      } else {
+        dictIds = this.ids
+      }
       this.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(() => {
         return delType({ids: dictIds});
       }).then(() => {

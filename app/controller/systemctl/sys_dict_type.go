@@ -6,7 +6,6 @@ import (
 	"go-web-template/app/model/system"
 	"go-web-template/app/model/system/request"
 	"go-web-template/app/service/syssrv"
-	"go-web-template/global"
 	"strconv"
 )
 
@@ -18,7 +17,7 @@ func (*SysDictTypeApi) GetDictTypeList(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	data, err := syssrv.SysDictTypeSrv.SelectDictTypeList(ctx, params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -28,7 +27,7 @@ func (*SysDictTypeApi) GetDictType(ctx *gin.Context) {
 	dictCode, _ := strconv.Atoi(ctx.Param("dictId"))
 	data, err := syssrv.SysDictTypeSrv.SelectDictTypeById(ctx, int64(dictCode))
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.OkWithData(data, ctx)
 	}
@@ -39,7 +38,7 @@ func (*SysDictTypeApi) AddDictType(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictTypeSrv.AddDictType(ctx, &params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
@@ -50,7 +49,7 @@ func (*SysDictTypeApi) UpdateDictType(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictTypeSrv.UpdateDictType(ctx, &params)
 	if err != nil {
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
@@ -61,17 +60,26 @@ func (*SysDictTypeApi) DeleteDictType(ctx *gin.Context) {
 	_ = ctx.ShouldBindJSON(&params)
 	err := syssrv.SysDictTypeSrv.DeleteDictTypeByIds(ctx, params.Ids)
 	if err != nil {
-		global.Logger.Error(err)
-		result.Fail(ctx)
+		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
 }
 
 func (*SysDictTypeApi) RefreshCache(ctx *gin.Context) {
-
+	err := syssrv.SysDictTypeSrv.ResetDictCache(ctx)
+	if err != nil {
+		result.FailWithMessage(err.Error(), ctx)
+	} else {
+		result.Ok(ctx)
+	}
 }
 
 func (*SysDictTypeApi) OptionSelect(ctx *gin.Context) {
-
+	data, err := syssrv.SysDictTypeSrv.SelectDictTypeAll(ctx)
+	if err != nil {
+		result.FailWithMessage(err.Error(), ctx)
+	} else {
+		result.OkWithData(data, ctx)
+	}
 }

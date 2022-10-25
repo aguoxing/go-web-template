@@ -383,7 +383,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       let dictCodes = [];
-      dictCodes = row.dictCode === undefined ? dictCodes.push(row.dictCode) : this.ids
+      if (row.dictCode !== undefined) {
+        dictCodes.push(row.dictCode)
+      } else {
+        dictCodes = this.ids
+      }
       this.$modal.confirm('是否确认删除字典编码为"' + dictCodes + '"的数据项？').then(() => {
         return delData({ids: dictCodes});
       }).then(() => {

@@ -55,8 +55,13 @@ func (s *SysConfigService) SelectCaptchaEnabled(ctx context.Context) (bool, erro
 	return value == "true", nil
 }
 
-func (*SysConfigService) AddSysConfig(ctx context.Context, sysConfig *system.SysConfig) error {
+func (s *SysConfigService) AddSysConfig(ctx context.Context, sysConfig *system.SysConfig) error {
 	sysConfigDao := sysdao.NewSysConfigDao(ctx)
+	r, _ := s.CheckConfigKeyUnique(ctx, sysConfig)
+	if !r {
+		global.Logger.Error("新增失败！已存在该配置key")
+		return errors.New("新增失败！已存在该配置key")
+	}
 	err := sysConfigDao.Insert(sysConfig)
 	if err != nil {
 		global.Logger.Error(err)
@@ -66,8 +71,13 @@ func (*SysConfigService) AddSysConfig(ctx context.Context, sysConfig *system.Sys
 	return nil
 }
 
-func (*SysConfigService) UpdateSysConfig(ctx context.Context, sysConfig *system.SysConfig) error {
+func (s *SysConfigService) UpdateSysConfig(ctx context.Context, sysConfig *system.SysConfig) error {
 	sysConfigDao := sysdao.NewSysConfigDao(ctx)
+	r, _ := s.CheckConfigKeyUnique(ctx, sysConfig)
+	if !r {
+		global.Logger.Error("修改失败！已存在该配置key")
+		return errors.New("修改失败！已存在该配置key")
+	}
 	err := sysConfigDao.UpdateById(sysConfig)
 	if err != nil {
 		global.Logger.Error(err)

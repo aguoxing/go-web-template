@@ -61,8 +61,8 @@ func InitRouter() {
 		dictRoutes.POST("/type", dictTypeApi.AddDictType)
 		dictRoutes.PUT("/type", dictTypeApi.UpdateDictType)
 		dictRoutes.DELETE("/type", dictTypeApi.DeleteDictType)
-		dictRoutes.DELETE("/refreshCache", dictTypeApi.RefreshCache)
-		dictRoutes.GET("/optionSelect", dictTypeApi.OptionSelect)
+		dictRoutes.DELETE("/type/refreshCache", dictTypeApi.RefreshCache)
+		dictRoutes.GET("/type/optionSelect", dictTypeApi.OptionSelect)
 	}
 
 	// 用户管理

@@ -64,7 +64,7 @@ func (dao *SysConfigDao) Insert(config *system.SysConfig) error {
 
 func (dao *SysConfigDao) UpdateById(config *system.SysConfig) error {
 	// Save 保存更新数据库中的值。如果值不包含一个匹配的主键，值将被插入。
-	return dao.DB.Model(&system.SysConfig{}).Save(config).Error
+	return dao.DB.Save(config).Error
 }
 
 func (dao *SysConfigDao) DeleteById(id int64) error {
@@ -79,7 +79,7 @@ func (dao *SysConfigDao) DeleteByIds(ids []int64) error {
 }
 
 func (dao *SysConfigDao) CheckConfigKeyUnique(configKey string) (count int64, err error) {
-	err = dao.DB.Where("config_key=?", configKey).Count(&count).Error
+	err = dao.DB.Model(&system.SysConfig{}).Where("config_key=?", configKey).Count(&count).Error
 	return
 }
 

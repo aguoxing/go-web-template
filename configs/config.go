@@ -32,6 +32,16 @@ type ServerConfig struct {
 	Mode string `yaml:"mode"`
 }
 
+type DBConfig struct {
+	Platform string
+	Host     string
+	Port     int16
+	Dbname   string
+	Username string
+	Password string
+	Arg      string
+}
+
 type LoggerConfig struct {
 	Path   string
 	Level  uint32

@@ -49,6 +49,11 @@ func (dao *SysDictTypeDao) SelectList(dictType request.SysDictType) (p *page.Pag
 	return p, err
 }
 
+func (dao *SysDictTypeDao) SelectAll() (list []system.SysDictType, err error) {
+	err = dao.DB.Find(&list).Error
+	return
+}
+
 func (dao *SysDictTypeDao) SelectById(dictId int64) (dictType *system.SysDictType, err error) {
 	err = dao.DB.Where("dict_id = ?", dictId).Find(&dictType).Error
 	if err != nil {
@@ -67,4 +72,9 @@ func (dao *SysDictTypeDao) UpdateById(dictType *system.SysDictType) error {
 
 func (dao *SysDictTypeDao) DeleteByIds(ids []int64) error {
 	return dao.DB.Where("dict_id in (?)", ids).Delete(&system.SysDictType{}).Error
+}
+
+func (dao *SysDictTypeDao) CheckDictTypeUnique(dictType string) (count int64, err error) {
+	err = dao.DB.Model(&system.SysDictType{}).Where("dict_type=?", dictType).Count(&count).Error
+	return
 }
