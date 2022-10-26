@@ -20,7 +20,7 @@ func NewSysDictTypeDao(ctx context.Context) *SysDictTypeDao {
 
 // SelectList 根据条件分页查询字典类型
 func (dao *SysDictTypeDao) SelectList(dictType request.SysDictType) (p *page.Pagination, err error) {
-	var DictTypeList []*system.SysDictType
+	var dictTypeList []*system.SysDictType
 	p = new(page.Pagination)
 
 	if dictType.DictName != "" {
@@ -36,11 +36,11 @@ func (dao *SysDictTypeDao) SelectList(dictType request.SysDictType) (p *page.Pag
 	if dictType.OpenPage {
 		p.PageNum = dictType.PageNum
 		p.PageSize = dictType.PageSize
-		err = dao.DB.Scopes(page.SelectPage(DictTypeList, p, dao.DB)).Find(&DictTypeList).Error
+		err = dao.DB.Scopes(page.SelectPage(dictTypeList, p, dao.DB)).Find(&dictTypeList).Error
 	} else {
-		err = dao.DB.Find(&DictTypeList).Error
+		err = dao.DB.Find(&dictTypeList).Error
 	}
-	p.Rows = DictTypeList
+	p.Rows = dictTypeList
 	if err != nil {
 		p.Code = e.ERROR
 		p.Msg = err.Error()

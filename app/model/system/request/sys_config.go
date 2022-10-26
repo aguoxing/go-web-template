@@ -6,7 +6,7 @@ import (
 
 type SysConfig struct {
 	OpenPage    bool      `json:"openPage"`                 // 开启分页
-	PageNum     int       `json:"PageNum" form:"PageNum"`   // 页码
+	PageNum     int       `json:"pageNum" form:"pageNum"`   // 页码
 	PageSize    int       `json:"pageSize" form:"pageSize"` // 每页大小
 	Ids         []int64   `json:"ids"`                      // configIds
 	ConfigID    int64     `json:"configId"`                 // 参数主键

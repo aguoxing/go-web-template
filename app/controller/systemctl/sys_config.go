@@ -16,7 +16,7 @@ func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 	var params request.SysConfig
 	params.OpenPage = true
 	_ = ctx.ShouldBindJSON(&params)
-	data, err := syssrv.SysConfigSrv.SelectSysConfigList(ctx, &params)
+	data, err := syssrv.SysConfigSrv.SelectSysConfigList(ctx.Request.Context(), &params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -27,7 +27,7 @@ func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 // GetConfigById 根据参数编号获取详细信息
 func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
 	configId, _ := strconv.Atoi(ctx.Param("configId"))
-	data, err := syssrv.SysConfigSrv.SelectSysConfigById(ctx, int64(configId))
+	data, err := syssrv.SysConfigSrv.SelectSysConfigById(ctx.Request.Context(), int64(configId))
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -39,7 +39,7 @@ func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
 func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
 	var config request.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
-	data, err := syssrv.SysConfigSrv.SelectSysConfigByKey(ctx, config.ConfigKey)
+	data, err := syssrv.SysConfigSrv.SelectSysConfigByKey(ctx.Request.Context(), config.ConfigKey)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -51,7 +51,7 @@ func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
 func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
 	var config system.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
-	err := syssrv.SysConfigSrv.AddSysConfig(ctx, &config)
+	err := syssrv.SysConfigSrv.AddSysConfig(ctx.Request.Context(), &config)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -63,7 +63,7 @@ func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
 func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
 	var config system.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
-	err := syssrv.SysConfigSrv.UpdateSysConfig(ctx, &config)
+	err := syssrv.SysConfigSrv.UpdateSysConfig(ctx.Request.Context(), &config)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -75,7 +75,7 @@ func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
 func (s *SysConfigApi) RemoveConfig(ctx *gin.Context) {
 	var config request.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
-	err := syssrv.SysConfigSrv.DeleteSysConfigByIds(ctx, config.Ids)
+	err := syssrv.SysConfigSrv.DeleteSysConfigByIds(ctx.Request.Context(), config.Ids)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {

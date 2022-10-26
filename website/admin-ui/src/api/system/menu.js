@@ -1,20 +1,20 @@
 import request from '@/utils/request'
 
 // 查询菜单列表
-export function listMenu(query) {
+export function listMenu(data) {
   return request({
     url: '/system/menu/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: data
   })
 }
 
 // 分页查询菜单列表
-export function listTreeByPage(query) {
+export function listTreeByPage(data) {
   return request({
     url: '/system/menu/listTreeByPage',
-    method: 'get',
-    params: query
+    method: 'post',
+    params: data
   })
 }
 
@@ -27,18 +27,19 @@ export function getMenu(menuId) {
 }
 
 // 查询菜单下拉树结构
-export function treeselect() {
+export function treeSelect() {
   return request({
-    url: '/system/menu/treeselect',
+    url: '/system/menu/treeSelect',
     method: 'get'
   })
 }
 
 // 根据角色ID查询菜单下拉树结构
-export function roleMenuTreeselect(roleId) {
+export function roleMenuTreeSelect(data) {
   return request({
-    url: '/system/menu/roleMenuTreeselect/' + roleId,
-    method: 'get'
+    url: '/system/menu/roleMenuTreeSelect',
+    method: 'post',
+    data: data
   })
 }
 

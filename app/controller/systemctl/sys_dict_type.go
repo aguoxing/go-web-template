@@ -15,7 +15,7 @@ func (*SysDictTypeApi) GetDictTypeList(ctx *gin.Context) {
 	var params request.SysDictType
 	params.OpenPage = true
 	_ = ctx.ShouldBindJSON(&params)
-	data, err := syssrv.SysDictTypeSrv.SelectDictTypeList(ctx, params)
+	data, err := syssrv.SysDictTypeSrv.SelectDictTypeList(ctx.Request.Context(), params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -25,7 +25,7 @@ func (*SysDictTypeApi) GetDictTypeList(ctx *gin.Context) {
 
 func (*SysDictTypeApi) GetDictType(ctx *gin.Context) {
 	dictCode, _ := strconv.Atoi(ctx.Param("dictId"))
-	data, err := syssrv.SysDictTypeSrv.SelectDictTypeById(ctx, int64(dictCode))
+	data, err := syssrv.SysDictTypeSrv.SelectDictTypeById(ctx.Request.Context(), int64(dictCode))
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -36,7 +36,7 @@ func (*SysDictTypeApi) GetDictType(ctx *gin.Context) {
 func (*SysDictTypeApi) AddDictType(ctx *gin.Context) {
 	var params system.SysDictType
 	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysDictTypeSrv.AddDictType(ctx, &params)
+	err := syssrv.SysDictTypeSrv.AddDictType(ctx.Request.Context(), &params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -47,7 +47,7 @@ func (*SysDictTypeApi) AddDictType(ctx *gin.Context) {
 func (*SysDictTypeApi) UpdateDictType(ctx *gin.Context) {
 	var params system.SysDictType
 	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysDictTypeSrv.UpdateDictType(ctx, &params)
+	err := syssrv.SysDictTypeSrv.UpdateDictType(ctx.Request.Context(), &params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -58,7 +58,7 @@ func (*SysDictTypeApi) UpdateDictType(ctx *gin.Context) {
 func (*SysDictTypeApi) DeleteDictType(ctx *gin.Context) {
 	var params request.SysDictType
 	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysDictTypeSrv.DeleteDictTypeByIds(ctx, params.Ids)
+	err := syssrv.SysDictTypeSrv.DeleteDictTypeByIds(ctx.Request.Context(), params.Ids)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {

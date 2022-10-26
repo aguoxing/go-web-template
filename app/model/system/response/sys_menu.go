@@ -1,6 +1,7 @@
 package response
 
 import (
+	"go-web-template/app/model/system"
 	"time"
 )
 
@@ -34,7 +35,7 @@ type RouterVo struct {
 	Hidden     bool       `json:"hidden"`               // 是否隐藏路由，当设置 true 的时候该路由不会再侧边栏出现
 	Redirect   string     `json:"redirect,omitempty"`   // 重定向地址，当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
 	Component  string     `json:"component"`            // 组件地址
-	Query      string     `json:"query,omitempty"`      // 路由参数：如 {"id": 1, "name": "ry"}
+	Query      string     `json:"query,omitempty"`      // 路由参数：如 {"id": 1, "name": "admin"}
 	AlwaysShow bool       `json:"alwaysShow,omitempty"` // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
 	Meta       *MetaVo    `json:"meta"`                 // 其他元素
 	Children   []RouterVo `json:"children,omitempty"`   // 子路由
@@ -46,4 +47,9 @@ type MetaVo struct {
 	Icon    string `json:"icon"`    // 设置该路由的图标，对应路径src/assets/icons/svg
 	NoCache bool   `json:"noCache"` // 设置为true，则不会被 <keep-alive>缓存
 	Link    string `json:"link"`    // 内链地址（http(s)://开头）
+}
+
+type RoleMenuTreeSelectResp struct {
+	CheckedKeys []int64           `json:"checkedKeys"`
+	Menus       []*system.SysMenu `json:"menus"`
 }

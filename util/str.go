@@ -17,11 +17,3 @@ func FirstLower(s string) string {
 	}
 	return strings.ToLower(s[:1]) + s[1:]
 }
-
-func IsHttp(s string) string {
-	if strings.HasPrefix(s, "http://") {
-		return s
-	} else {
-		return ""
-	}
-}

@@ -5,7 +5,8 @@ import (
 )
 
 type SysUser struct {
-	PageNum     int       `json:"PageNum" form:"PageNum"`   // 页码
+	OpenPage    bool      `json:"openPage"`                 // 开启分页
+	PageNum     int       `json:"pageNum" form:"pageNum"`   // 页码
 	PageSize    int       `json:"pageSize" form:"pageSize"` // 每页大小
 	UserID      int64     `json:"userId" form:"userId"`     // 用户ID
 	DeptID      int64     `json:"deptId" form:"deptId"`     // 部门ID

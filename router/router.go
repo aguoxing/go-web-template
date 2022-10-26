@@ -65,6 +65,20 @@ func InitRouter() {
 		dictRoutes.GET("/type/optionSelect", dictTypeApi.OptionSelect)
 	}
 
+	// 菜单管理
+	menuRoutes := systemRoutes.Group("menu")
+	menuApi := systemctl.SysMenuApi{}
+	{
+		menuRoutes.POST("", menuApi.AddSysMenu)
+		menuRoutes.PUT("", menuApi.UpdateSysMenu)
+		menuRoutes.DELETE("/:menuId", menuApi.DeleteSysMenu)
+		menuRoutes.POST("/list", menuApi.GetMenuList)
+		menuRoutes.POST("/listTreeByPage", menuApi.GetMenuTreeByPage)
+		menuRoutes.GET("/:menuId", menuApi.GetMenuInfo)
+		menuRoutes.GET("/treeSelect", menuApi.TreeSelect)
+		menuRoutes.POST("/roleMenuTreeSelect", menuApi.RoleMenuTreeSelect)
+	}
+
 	// 用户管理
 	userRoutes := systemRoutes.Group("user")
 	userApi := systemctl.SysUserApi{}

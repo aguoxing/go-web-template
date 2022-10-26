@@ -255,7 +255,7 @@
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
+import {treeSelect as menuTreeSelect, roleMenuTreeSelect} from "@/api/system/menu";
 
 export default {
   name: "Role",
@@ -358,8 +358,8 @@ export default {
       );
     },
     /** 查询菜单树结构 */
-    getMenuTreeselect() {
-      menuTreeselect().then(response => {
+    getMenuTreeSelect() {
+      menuTreeSelect().then(response => {
         this.menuOptions = response.data;
       });
     },
@@ -382,10 +382,10 @@ export default {
       return checkedKeys;
     },
     /** 根据角色ID查询菜单树结构 */
-    getRoleMenuTreeselect(roleId) {
-      return roleMenuTreeselect(roleId).then(response => {
-        this.menuOptions = response.menus;
-        return response;
+    getRoleMenuTreeSelect(roleId) {
+      return roleMenuTreeSelect({roleId: roleId}).then(response => {
+        this.menuOptions = response.data.menus;
+        return response.data;
       });
     },
     /** 根据角色ID查询部门树结构 */
@@ -502,7 +502,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.getMenuTreeselect();
+      this.getMenuTreeSelect();
       this.open = true;
       this.title = "添加角色";
     },
@@ -510,7 +510,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const roleId = row.roleId || this.ids
-      const roleMenu = this.getRoleMenuTreeselect(roleId);
+      const roleMenu = this.getRoleMenuTreeSelect(roleId);
       getRole(roleId).then(response => {
         this.form = response.data;
         this.open = true;

@@ -1,7 +1,7 @@
 package syssrv
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
 	"go-web-template/app/common/page"
 	"go-web-template/app/dao/sysdao"
 	"go-web-template/app/model/system"
@@ -14,7 +14,7 @@ type SysDictDataService struct{}
 var SysDictDataSrv = new(SysDictDataService)
 
 // SelectDictDataList 根据条件分页查询字典数据
-func (*SysDictDataService) SelectDictDataList(ctx *gin.Context, dictData request.SysDictData) (*page.Pagination, error) {
+func (*SysDictDataService) SelectDictDataList(ctx context.Context, dictData request.SysDictData) (*page.Pagination, error) {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	data, err := sysDictDataDao.SelectList(dictData)
 	if err != nil {
@@ -25,7 +25,7 @@ func (*SysDictDataService) SelectDictDataList(ctx *gin.Context, dictData request
 }
 
 // SelectDictDataById 根据字典数据ID查询信息
-func (*SysDictDataService) SelectDictDataById(ctx *gin.Context, dictCode int64) (*system.SysDictData, error) {
+func (*SysDictDataService) SelectDictDataById(ctx context.Context, dictCode int64) (*system.SysDictData, error) {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	data, err := sysDictDataDao.SelectById(dictCode)
 	if err != nil {
@@ -36,7 +36,7 @@ func (*SysDictDataService) SelectDictDataById(ctx *gin.Context, dictCode int64) 
 }
 
 // AddDictData 新增
-func (*SysDictDataService) AddDictData(ctx *gin.Context, dictData *system.SysDictData) error {
+func (*SysDictDataService) AddDictData(ctx context.Context, dictData *system.SysDictData) error {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	err := sysDictDataDao.Insert(dictData)
 	if err != nil {
@@ -47,7 +47,7 @@ func (*SysDictDataService) AddDictData(ctx *gin.Context, dictData *system.SysDic
 }
 
 // UpdateDictData 更新
-func (s *SysDictDataService) UpdateDictData(ctx *gin.Context, dictData *system.SysDictData) error {
+func (s *SysDictDataService) UpdateDictData(ctx context.Context, dictData *system.SysDictData) error {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	err := sysDictDataDao.UpdateById(dictData)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *SysDictDataService) UpdateDictData(ctx *gin.Context, dictData *system.S
 }
 
 // DeleteDictDataByIds 单个删除/批量删除
-func (s *SysDictDataService) DeleteDictDataByIds(ctx *gin.Context, ids []int64) error {
+func (s *SysDictDataService) DeleteDictDataByIds(ctx context.Context, ids []int64) error {
 	sysDictDataDao := sysdao.NewSysDictDataDao(ctx)
 	err := sysDictDataDao.DeleteByIds(ids)
 	if err != nil {

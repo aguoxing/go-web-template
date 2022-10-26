@@ -346,8 +346,8 @@ export default {
     getList() {
       this.loading = true;
       listTreeByPage(this.queryParams).then(response => {
-        this.menuList = response.rows;
-        this.total = response.total;
+        this.menuList = response.data;
+        this.total = response.data.length;
         this.loading = false;
       });
     },
@@ -363,11 +363,11 @@ export default {
       };
     },
     /** 查询菜单下拉树结构 */
-    getTreeselect() {
+    getTreeSelect() {
       listMenu().then(response => {
         this.menuOptions = [];
         const menu = { menuId: 0, menuName: '主类目', children: [] };
-        menu.children = this.handleTree(response.data, "menuId");
+        menu.children = this.handleTree(response.data.rows, "menuId");
         this.menuOptions.push(menu);
       });
     },
@@ -404,7 +404,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd(row) {
       this.reset();
-      this.getTreeselect();
+      this.getTreeSelect();
       if (row != null && row.menuId) {
         this.form.parentId = row.menuId;
       } else {
@@ -424,7 +424,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeselect();
+      this.getTreeSelect();
       getMenu(row.menuId).then(response => {
         this.form = response.data;
         this.open = true;
