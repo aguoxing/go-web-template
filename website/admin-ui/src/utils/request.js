@@ -75,7 +75,7 @@ service.interceptors.response.use(res => {
     if(res.request.responseType ===  'blob' || res.request.responseType ===  'arraybuffer'){
       return res.data
     }
-    if (code === 401) {
+    if (code === 401 || code === 403) {
       if (!isRelogin.show) {
         isRelogin.show = true;
         MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {

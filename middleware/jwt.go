@@ -6,9 +6,9 @@ import (
 	"go-web-template/app/common/result"
 	"go-web-template/app/framework"
 	"go-web-template/configs"
+	"go-web-template/global"
 	"go-web-template/util"
 	"strings"
-	"time"
 )
 
 // JWT token验证中间件
@@ -17,23 +17,34 @@ func JWT() gin.HandlerFunc {
 		var code = 200
 		token := getToken(ctx)
 		if token == "" {
-			code = 404
+			code = e.UNAUTHORIZED
 		} else {
 			claims, err := util.ParseToken(token)
-			loginUser, _ := framework.TokenSrv.GetLoginUser(ctx)
-			framework.TokenSrv.VerifyToken(loginUser)
 			if err != nil {
 				code = e.UNAUTHORIZED
-			} else if time.Now().Unix() > claims.ExpiresAt {
-				code = e.FORBIDDEN
+			} else {
+				// 二选一
+				// 这里以jwt设置的过期时间为准 默认30分钟 不可刷新
+				//if time.Now().Unix() > claims.ExpiresAt {
+				//	code = e.FORBIDDEN
+				//}
+
+				// 这里以redis key的过期时间为准 可刷新
+				loginUser, _ := framework.TokenSrv.GetLoginUser(ctx)
+				if loginUser != nil {
+					global.Logger.Info("jwt过期时间: ", claims.ExpiresAt)
+					framework.TokenSrv.VerifyToken(loginUser)
+				} else {
+					code = e.FORBIDDEN
+				}
 			}
 		}
 		if code != e.SUCCESS {
-			result.FailWithDetailed(result.Response{Code: code, Msg: e.GetMsg(code)}, e.GetMsg(code), ctx)
+			result.Forbidden(ctx)
 			ctx.Abort()
-			return
+		} else {
+			ctx.Next()
 		}
-		ctx.Next()
 	}
 }
 

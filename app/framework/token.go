@@ -32,7 +32,7 @@ func (t *TokenService) GetLoginUser(ctx *gin.Context) (loginUser *response.Login
 			return nil, err
 		}
 		userKey := "login_tokens:" + claims.LoginUserKey
-		jsonData, _ := global.Redis.Get(context.Background(), userKey).Result()
+		jsonData, _ := global.Redis.Get(ctx, userKey).Result()
 		err = json.Unmarshal([]byte(jsonData), &loginUser)
 		if err != nil {
 			global.Logger.Error(err)
