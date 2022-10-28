@@ -35,12 +35,12 @@ func InitRouter() {
 	configRoutes := systemRoutes.Group("config")
 	configApi := systemctl.SysConfigApi{}
 	{
-		configRoutes.POST("/list", configApi.GetConfigList)
-		configRoutes.GET("/:configId", configApi.GetConfigById)
-		configRoutes.GET("/configKey/:configKey", configApi.GetConfigKey)
-		configRoutes.POST("", configApi.AddConfig)
-		configRoutes.PUT("", configApi.EditConfig)
-		configRoutes.DELETE("", configApi.RemoveConfig)
+		configRoutes.POST("/list", configApi.GetSysConfigList)
+		configRoutes.GET("/:configId", configApi.GetSysConfigById)
+		configRoutes.GET("/configKey/:configKey", configApi.GetSysConfigByKey)
+		configRoutes.POST("", configApi.AddSysConfig)
+		configRoutes.PUT("", configApi.UpdateSysConfig)
+		configRoutes.DELETE("", configApi.DeleteSysConfig)
 		configRoutes.DELETE("/refreshCache", configApi.RefreshCache)
 	}
 
@@ -79,11 +79,37 @@ func InitRouter() {
 		menuRoutes.POST("/roleMenuTreeSelect", menuApi.RoleMenuTreeSelect)
 	}
 
+	// 角色管理
+	roleRoutes := systemRoutes.Group("role")
+	roleApi := systemctl.SysRoleApi{}
+	{
+		roleRoutes.POST("/list", roleApi.GetSysRoleList)
+		roleRoutes.GET("/:roleId", roleApi.GetSysRole)
+		roleRoutes.POST("", roleApi.AddSysRole)
+		roleRoutes.PUT("", roleApi.UpdateSysRole)
+		roleRoutes.DELETE("", roleApi.DeleteSysRole)
+	}
+
 	// 用户管理
 	userRoutes := systemRoutes.Group("user")
 	userApi := systemctl.SysUserApi{}
 	{
-		userRoutes.GET("/:userId", userApi.GetUserInfo)
+		userRoutes.POST("/list", userApi.GetSysUserList)
+		userRoutes.GET("/:userId", userApi.GetSysUser)
+		userRoutes.POST("", userApi.AddSysUser)
+		userRoutes.PUT("", userApi.UpdateSysUser)
+		userRoutes.DELETE("", userApi.DeleteSysUser)
+	}
+
+	// 通知管理
+	noticeRoutes := systemRoutes.Group("notice")
+	noticeApi := systemctl.SysNoticeApi{}
+	{
+		noticeRoutes.POST("/list", noticeApi.GetSysNoticeList)
+		noticeRoutes.GET("/:noticeId", noticeApi.GetSysNotice)
+		noticeRoutes.POST("", noticeApi.AddSysNotice)
+		noticeRoutes.PUT("", noticeApi.UpdateSysNotice)
+		noticeRoutes.DELETE("", noticeApi.DeleteSysNotice)
 	}
 
 	_ = r.Run(configs.AppConfig.Server.Port)

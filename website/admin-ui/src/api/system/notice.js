@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 查询公告列表
-export function listNotice(query) {
+export function listNotice(data) {
   return request({
     url: '/system/notice/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: data
   })
 }
 
@@ -36,9 +36,10 @@ export function updateNotice(data) {
 }
 
 // 删除公告
-export function delNotice(noticeId) {
+export function delNotice(data) {
   return request({
-    url: '/system/notice/' + noticeId,
-    method: 'delete'
+    url: '/system/notice',
+    method: 'delete',
+    data: data
   })
 }

@@ -224,8 +224,8 @@ export default {
     getList() {
       this.loading = true;
       listNotice(this.queryParams).then(response => {
-        this.noticeList = response.rows;
-        this.total = response.total;
+        this.noticeList = response.data.rows;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -299,9 +299,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const noticeIds = row.noticeId || this.ids
+      let noticeIds = [];
+      if (row.noticeId !== undefined) {
+        noticeIds.push(row.noticeId)
+      } else {
+        noticeIds = this.ids
+      }
       this.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
-        return delNotice(noticeIds);
+        return delNotice({ids: noticeIds});
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
