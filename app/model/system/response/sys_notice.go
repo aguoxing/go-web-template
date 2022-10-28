@@ -6,7 +6,7 @@ import (
 )
 
 type SysNotice struct {
-	*base.CommonModel
+	base.CommonModel
 	NoticeID      int64     `json:"noticeId"`      // 公告ID
 	NoticeTitle   string    `json:"noticeTitle"`   // 公告标题
 	NoticeType    string    `json:"noticeType"`    // 公告类型（1通知 2公告）

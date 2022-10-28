@@ -112,6 +112,29 @@ func InitRouter() {
 		noticeRoutes.DELETE("", noticeApi.DeleteSysNotice)
 	}
 
+	// 部门管理
+	deptRoutes := systemRoutes.Group("dept")
+	deptApi := systemctl.SysDeptApi{}
+	{
+		deptRoutes.POST("/list", deptApi.GetSysDeptList)
+		deptRoutes.POST("/tree", deptApi.GetSysDeptTreeList)
+		deptRoutes.GET("/:deptId", deptApi.GetSysDept)
+		deptRoutes.POST("", deptApi.AddSysDept)
+		deptRoutes.PUT("", deptApi.UpdateSysDept)
+		deptRoutes.DELETE("", deptApi.DeleteSysDept)
+	}
+
+	// 岗位管理
+	postRoutes := systemRoutes.Group("post")
+	postApi := systemctl.SysPostApi{}
+	{
+		postRoutes.POST("/list", postApi.GetSysPostList)
+		postRoutes.GET("/:postId", postApi.GetSysPost)
+		postRoutes.POST("", postApi.AddSysPost)
+		postRoutes.PUT("", postApi.UpdateSysPost)
+		postRoutes.DELETE("", postApi.DeleteSysPost)
+	}
+
 	_ = r.Run(configs.AppConfig.Server.Port)
 }
 

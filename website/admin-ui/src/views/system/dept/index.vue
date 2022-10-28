@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept";
+import {listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild, listDeptTree} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -226,10 +226,14 @@ export default {
     /** 查询部门列表 */
     getList() {
       this.loading = true;
-      listDept(this.queryParams).then(response => {
+      /*listDept(this.queryParams).then(response => {
         this.deptList = this.handleTree(response.data, "deptId");
         this.loading = false;
-      });
+      });*/
+      listDeptTree(this.queryParams).then(res => {
+        this.deptList = res.data;
+        this.loading = false;
+      })
     },
     /** 转换部门数据结构 */
     normalizer(node) {
@@ -328,8 +332,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
+      let deptIds = [];
+      if (row.deptId !== undefined) {
+        deptIds.push(row.deptId)
+      } else {
+        deptIds = this.ids
+      }
       this.$modal.confirm('是否确认删除名称为"' + row.deptName + '"的数据项？').then(function() {
-        return delDept(row.deptId);
+        return delDept({ids: deptIds});
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");

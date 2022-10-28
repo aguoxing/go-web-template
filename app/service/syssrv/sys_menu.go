@@ -147,7 +147,7 @@ func (*SysMenuService) SelectMenuTreeByUserId(ctx context.Context, sysUser *syst
 	} else {
 		menus, err = sysMenuDao.SelectMenuTreeByUserId(sysUser.UserID)
 	}
-	return buildTree(menus), nil
+	return buildMenuTree(menus), nil
 }
 
 func (*SysMenuService) SelectMenuListByRoleId(ctx context.Context, roleId int64) ([]int64, error) {
@@ -181,7 +181,7 @@ func (s *SysMenuService) GetTreeSelect(ctx context.Context, menu *request.SysMen
 		global.Logger.Error("类型转换错误")
 		return nil, errors.New("类型转换错误")
 	}
-	treeList := buildTree(menus)
+	treeList := buildMenuTree(menus)
 	return treeList, nil
 }
 
@@ -219,7 +219,7 @@ func checkMenuExistRole(ctx context.Context, menuId int64) bool {
 }
 
 // 构建菜单树
-func buildTree(menus []*system.SysMenu) []*system.SysMenu {
+func buildMenuTree(menus []*system.SysMenu) []*system.SysMenu {
 	menuMap := make(map[int64]*system.SysMenu)
 	for i, menu := range menus {
 		menu.ArrIdx = i

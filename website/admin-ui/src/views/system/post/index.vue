@@ -214,8 +214,8 @@ export default {
     getList() {
       this.loading = true;
       listPost(this.queryParams).then(response => {
-        this.postList = response.rows;
-        this.total = response.total;
+        this.postList = response.data.rows;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -290,9 +290,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const postIds = row.postId || this.ids;
+      let postIds = [];
+      if (row.postId !== undefined) {
+        postIds.push(row.postId)
+      } else {
+        postIds = this.ids
+      }
       this.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
-        return delPost(postIds);
+        return delPost({ids: postIds});
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
