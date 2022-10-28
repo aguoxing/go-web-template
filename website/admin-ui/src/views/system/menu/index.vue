@@ -315,7 +315,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         menuName: undefined,
-        visible: undefined
+        visible: undefined,
       },
       total: 0,
       // 表单参数
@@ -347,7 +347,8 @@ export default {
       this.loading = true;
       listTreeByPage(this.queryParams).then(response => {
         this.menuList = response.data;
-        this.total = response.data.length;
+        // this.total = response.data.length;
+        this.total = 0;
         this.loading = false;
       });
     },

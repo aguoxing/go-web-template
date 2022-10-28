@@ -18,6 +18,10 @@ func NewSysMenuDao(ctx context.Context) *SysMenuDao {
 	return &SysMenuDao{configs.GetDB(ctx)}
 }
 
+func NewSysMenuDaoByDB(db *gorm.DB) *SysMenuDao {
+	return &SysMenuDao{db}
+}
+
 func (dao *SysMenuDao) SelectList(sysMenu *request.SysMenu) (p *page.Pagination, err error) {
 	var menuList []*system.SysMenu
 	p = new(page.Pagination)
@@ -129,11 +133,14 @@ func (dao *SysMenuDao) SelectMenuPermsByRoleId(roleId int64) (list []string, err
 	//		from sys_menu m
 	//			 left join sys_role_menu rm on m.menu_id = rm.menu_id
 	//		where m.status = '0' and rm.role_id = #{roleId}
-	err = dao.DB.Table("sys_menu m").Distinct("m.perms").Select("m.perms").
+	var perms []string
+	err = dao.DB.Table("sys_menu m").Select("m.menu_id").
 		Joins("left join sys_role_menu rm on m.menu_id = rm.menu_id").
-		Where("m.status = '0' and rm.role_id = ?", roleId).
-		Find(&list).Error
-	return list, err
+		Where("rm.role_id = ?", roleId).
+		Order("m.parent_id, m.order_num").
+		Find(&perms).
+		Error
+	return perms, err
 }
 
 // SelectMenuTreeAll 查询系统菜单列表 M、C
@@ -143,17 +150,81 @@ func (dao *SysMenuDao) SelectMenuTreeAll() (menus []*system.SysMenu, err error) 
 }
 
 // SelectMenuTreeByUserId 根据用户Id查询系统菜单列表 M、C 涉及sys_role_menu、sys_user_role、sys_role、sys_user
-func (dao *SysMenuDao) SelectMenuTreeByUserId() (menus []*system.SysMenu, err error) {
-	err = dao.DB.Model(&system.SysMenu{}).Where("user_id=?", "1").Error
+func (dao *SysMenuDao) SelectMenuTreeByUserId(userId int64) (menus []*system.SysMenu, err error) {
+	// 		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+	//		from sys_menu m
+	//			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+	//			 left join sys_user_role ur on rm.role_id = ur.role_id
+	//			 left join sys_role ro on ur.role_id = ro.role_id
+	//			 left join sys_user u on ur.user_id = u.user_id
+	//		where u.user_id = #{userId} and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
+	//		order by m.parent_id, m.order_num
+	err = dao.DB.Table("sys_menu m").
+		Select("m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time").
+		Joins("left join sys_role_menu rm on m.menu_id = rm.menu_id").
+		Joins("left join sys_user_role ur on rm.role_id = ur.role_id").
+		Joins("left join sys_role ro on ur.role_id = ro.role_id").
+		Joins("left join sys_user u on ur.user_id = u.user_id").
+		Where("u.user_id = ?", userId).
+		Where("m.menu_type in ('M','C')").
+		Where("m.status = 0 and ro.status = 0").
+		Order("m.parent_id,m.order_num").
+		Find(&menus).Error
 	return
 }
 
 // SelectMenuListByRoleId 根据角色ID查询菜单树信息
-func (dao *SysMenuDao) SelectMenuListByRoleId(menu *request.MenuListByRoleId) (list []int64, err error) {
-	return nil, err
+func (dao *SysMenuDao) SelectMenuListByRoleId(param *request.MenuListByRoleId) (list []int64, err error) {
+	// 		select m.menu_id
+	//		from sys_menu m
+	//            left join sys_role_menu rm on m.menu_id = rm.menu_id
+	//        where rm.role_id = #{roleId}
+	//            <if test="menuCheckStrictly">
+	//              and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = #{roleId})
+	//            </if>
+	//		order by m.parent_id, m.order_num
+	dao.DB = dao.DB.Table("sys_menu m").Distinct("m.perms").Select("m.perms").
+		Joins("left join sys_role_menu rm on m.menu_id = rm.menu_id")
+
+	if param.IsMenuCheckStrictly {
+		dao.DB = dao.DB.Where("m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = ?)", param.RoleId)
+	}
+
+	err = dao.DB.Where("m.status = '0' and rm.role_id = ?", param.RoleId).Find(&list).Error
+	return list, err
 }
 
 // SelectMenuListByUserId 根据用户查询系统菜单列表
-func (dao *SysMenuDao) SelectMenuListByUserId(menu *request.SysMenu) (p *page.Pagination, err error) {
-	return nil, err
+func (dao *SysMenuDao) SelectMenuListByUserId(sysMenu *request.SysMenu) (p *page.Pagination, err error) {
+	var menuList []*system.SysMenu
+	p = new(page.Pagination)
+
+	err = dao.DB.Table("sys_menu m").
+		Select("m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time").
+		Joins("left join sys_role_menu rm on m.menu_id = rm.menu_id").
+		Joins("left join sys_user_role ur on rm.role_id = ur.role_id").
+		Joins("left join sys_role ro on ur.role_id = ro.role_id").
+		Where("u.user_id = ?", sysMenu.UserId).
+		Find(&menuList).Error
+
+	if sysMenu.ParentID != 0 {
+		dao.DB = dao.DB.Where("parent_id = ?", sysMenu.ParentID)
+	}
+	if sysMenu.MenuName != "" {
+		dao.DB = dao.DB.Where("menu_name = ?", sysMenu.MenuName)
+	}
+	if sysMenu.Visible != "" {
+		dao.DB = dao.DB.Where("visible = ?", sysMenu.Visible)
+	}
+	if sysMenu.Status != "" {
+		dao.DB = dao.DB.Where("status = ?", sysMenu.Status)
+	}
+
+	p.Rows = menuList
+	if err != nil {
+		p.Code = e.ERROR
+		p.Msg = err.Error()
+		return p, err
+	}
+	return p, err
 }

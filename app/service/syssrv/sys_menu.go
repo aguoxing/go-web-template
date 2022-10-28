@@ -20,6 +20,7 @@ var SysMenuSrv = new(SysMenuService)
 func (*SysMenuService) SelectMenuList(ctx context.Context, sysMenu *request.SysMenu, userId int64) (*page.Pagination, error) {
 	sysMenuDao := sysdao.NewSysMenuDao(ctx)
 	sysUser := system.SysUser{}
+	sysMenu.UserId = userId
 	if sysUser.IsAdmin(userId) {
 		data, err := sysMenuDao.SelectList(sysMenu)
 		if err != nil {
@@ -50,7 +51,7 @@ func (*SysMenuService) SelectSysMenuById(ctx context.Context, menuId int64) (*sy
 func (s *SysMenuService) AddSysMenu(ctx context.Context, sysMenu *system.SysMenu) error {
 	sysMenuDao := sysdao.NewSysMenuDao(ctx)
 	r := checkMenuNameUnique(ctx, sysMenu)
-	if !r {
+	if r {
 		global.Logger.Error("新增失败！菜单名称已存在")
 		return errors.New("新增失败！菜单名称已存在")
 	} else if sysMenu.IsFrame == 0 && !isHttp(sysMenu.Path) {
@@ -67,10 +68,10 @@ func (s *SysMenuService) AddSysMenu(ctx context.Context, sysMenu *system.SysMenu
 
 func (*SysMenuService) UpdateSysMenuById(ctx context.Context, sysMenu *system.SysMenu) error {
 	sysMenuDao := sysdao.NewSysMenuDao(ctx)
-	r := checkMenuNameUnique(ctx, sysMenu)
-	if !r {
-		global.Logger.Error("新增失败！菜单名称已存在")
-		return errors.New("新增失败！菜单名称已存在")
+	hasMenuName := checkMenuNameUnique(ctx, sysMenu)
+	if hasMenuName {
+		global.Logger.Error("修改失败！菜单名称已存在")
+		return errors.New("修改失败！菜单名称已存在")
 	} else if sysMenu.IsFrame == 0 && !isHttp(sysMenu.Path) {
 		global.Logger.Error("地址必须以http(s)://开头")
 		return errors.New("地址必须以http(s)://开头")
@@ -144,7 +145,7 @@ func (*SysMenuService) SelectMenuTreeByUserId(ctx context.Context, sysUser *syst
 	if sysUser.IsAdmin(sysUser.UserID) {
 		menus, err = sysMenuDao.SelectMenuTreeAll()
 	} else {
-		menus, err = sysMenuDao.SelectMenuTreeByUserId()
+		menus, err = sysMenuDao.SelectMenuTreeByUserId(sysUser.UserID)
 	}
 	return buildTree(menus), nil
 }
@@ -197,7 +198,13 @@ func hasChildByMenuId(ctx context.Context, menuId int64) bool {
 
 // 校验菜单名称是否唯一
 func checkMenuNameUnique(ctx context.Context, menu *system.SysMenu) bool {
-	return true
+	sysMenuDao := sysdao.NewSysMenuDao(ctx)
+	c, e := sysMenuDao.CheckMenuNameUnique(menu)
+	if e != nil {
+		global.Logger.Error(e)
+		return false
+	}
+	return c > 0
 }
 
 // 查询菜单使用数量

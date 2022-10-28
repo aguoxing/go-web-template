@@ -9,12 +9,12 @@ import (
 	"strconv"
 )
 
-type SysUserApi struct{}
+type SysRoleApi struct{}
 
-func (*SysUserApi) GetSysUserList(ctx *gin.Context) {
-	var params request.SysUser
+func (*SysRoleApi) GetSysRoleList(ctx *gin.Context) {
+	var params request.SysRole
 	_ = ctx.ShouldBindJSON(&params)
-	data, err := syssrv.SysUserSrv.GetSysUserList(ctx, &params)
+	data, err := syssrv.SysRoleSrv.GetSysRoleList(ctx, &params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -22,9 +22,9 @@ func (*SysUserApi) GetSysUserList(ctx *gin.Context) {
 	}
 }
 
-func (*SysUserApi) GetSysUser(ctx *gin.Context) {
+func (*SysRoleApi) GetSysRole(ctx *gin.Context) {
 	roleId, _ := strconv.Atoi(ctx.Param("roleId"))
-	data, err := syssrv.SysUserSrv.GetSysUserById(ctx, int64(roleId))
+	data, err := syssrv.SysRoleSrv.GetSysRoleById(ctx, int64(roleId))
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -32,10 +32,10 @@ func (*SysUserApi) GetSysUser(ctx *gin.Context) {
 	}
 }
 
-func (*SysUserApi) AddSysUser(ctx *gin.Context) {
-	var params system.SysUser
+func (*SysRoleApi) AddSysRole(ctx *gin.Context) {
+	var params system.SysRole
 	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysUserSrv.AddSysUser(ctx, &params)
+	err := syssrv.SysRoleSrv.AddSysRole(ctx, &params)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
@@ -43,32 +43,25 @@ func (*SysUserApi) AddSysUser(ctx *gin.Context) {
 	}
 }
 
-func (*SysUserApi) UpdateSysUser(ctx *gin.Context) {
-	var params system.SysUser
+func (*SysRoleApi) UpdateSysRole(ctx *gin.Context) {
+	var params system.SysRole
 	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysUserSrv.UpdateUserById(ctx, &params)
+	err := syssrv.SysRoleSrv.UpdateRoleById(ctx, &params)
+	if err != nil {
+		result.FailWithMessage(err.Error(), ctx)
+	} else {
+		// todo 更新缓存用户权限
+		result.Ok(ctx)
+	}
+}
+
+func (*SysRoleApi) DeleteSysRole(ctx *gin.Context) {
+	var params request.SysRole
+	_ = ctx.ShouldBindJSON(&params)
+	err := syssrv.SysRoleSrv.DeleteSysRoleByIds(ctx, params.Ids)
 	if err != nil {
 		result.FailWithMessage(err.Error(), ctx)
 	} else {
 		result.Ok(ctx)
 	}
-}
-
-func (*SysUserApi) DeleteSysUser(ctx *gin.Context) {
-	var params request.SysUser
-	_ = ctx.ShouldBindJSON(&params)
-	err := syssrv.SysUserSrv.DeleteSysUserByIds(ctx, params.Ids)
-	if err != nil {
-		result.FailWithMessage(err.Error(), ctx)
-	} else {
-		result.Ok(ctx)
-	}
-}
-
-func (*SysUserApi) ResetPwd(ctx *gin.Context) {
-
-}
-
-func (*SysUserApi) ChangeStatus(ctx *gin.Context) {
-
 }

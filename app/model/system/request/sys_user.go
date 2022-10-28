@@ -8,6 +8,7 @@ type SysUser struct {
 	OpenPage    bool      `json:"openPage"`                 // 开启分页
 	PageNum     int       `json:"pageNum" form:"pageNum"`   // 页码
 	PageSize    int       `json:"pageSize" form:"pageSize"` // 每页大小
+	Ids         []int64   `json:"ids"`                      // userIds
 	UserID      int64     `json:"userId" form:"userId"`     // 用户ID
 	DeptID      int64     `json:"deptId" form:"deptId"`     // 部门ID
 	UserName    string    `json:"userName" form:"userName"` // 用户账号
@@ -27,6 +28,7 @@ type SysUser struct {
 	UpdateBy    string    `json:"updateBy"`                 // 更新者
 	UpdateTime  time.Time ` json:"updateTime"`              // 更新时间
 	Remark      string    `json:"remark"`                   // 备注
+	DataScope   string    `json:"dataScope"`                // 数据范围
 }
 
 type LoginBody struct {

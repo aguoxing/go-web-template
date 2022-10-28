@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 查询角色列表
-export function listRole(query) {
+export function listRole(data) {
   return request({
     url: '/system/role/list',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: data
   })
 }
 
@@ -58,10 +58,11 @@ export function changeRoleStatus(roleId, status) {
 }
 
 // 删除角色
-export function delRole(roleId) {
+export function delRole(data) {
   return request({
-    url: '/system/role/' + roleId,
-    method: 'delete'
+    url: '/system/role',
+    method: 'delete',
+    data: data
   })
 }
 

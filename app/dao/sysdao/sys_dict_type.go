@@ -18,6 +18,10 @@ func NewSysDictTypeDao(ctx context.Context) *SysDictTypeDao {
 	return &SysDictTypeDao{configs.GetDB(ctx)}
 }
 
+func NewSysDictTypeDaoByDB(db *gorm.DB) *SysDictTypeDao {
+	return &SysDictTypeDao{db}
+}
+
 // SelectList 根据条件分页查询字典类型
 func (dao *SysDictTypeDao) SelectList(dictType request.SysDictType) (p *page.Pagination, err error) {
 	var dictTypeList []*system.SysDictType

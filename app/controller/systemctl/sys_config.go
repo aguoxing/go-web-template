@@ -11,8 +11,7 @@ import (
 
 type SysConfigApi struct{}
 
-// GetConfigList 获取参数列表
-func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
+func (s *SysConfigApi) GetSysConfigList(ctx *gin.Context) {
 	var params request.SysConfig
 	params.OpenPage = true
 	_ = ctx.ShouldBindJSON(&params)
@@ -24,8 +23,7 @@ func (s *SysConfigApi) GetConfigList(ctx *gin.Context) {
 	}
 }
 
-// GetConfigById 根据参数编号获取详细信息
-func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
+func (s *SysConfigApi) GetSysConfigById(ctx *gin.Context) {
 	configId, _ := strconv.Atoi(ctx.Param("configId"))
 	data, err := syssrv.SysConfigSrv.SelectSysConfigById(ctx.Request.Context(), int64(configId))
 	if err != nil {
@@ -35,8 +33,7 @@ func (s *SysConfigApi) GetConfigById(ctx *gin.Context) {
 	}
 }
 
-// GetConfigKey 根据参数键名查询参数值
-func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
+func (s *SysConfigApi) GetSysConfigByKey(ctx *gin.Context) {
 	var config request.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
 	data, err := syssrv.SysConfigSrv.SelectSysConfigByKey(ctx.Request.Context(), config.ConfigKey)
@@ -47,8 +44,7 @@ func (s *SysConfigApi) GetConfigKey(ctx *gin.Context) {
 	}
 }
 
-// AddConfig 添加配置
-func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
+func (s *SysConfigApi) AddSysConfig(ctx *gin.Context) {
 	var config system.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.AddSysConfig(ctx.Request.Context(), &config)
@@ -59,8 +55,7 @@ func (s *SysConfigApi) AddConfig(ctx *gin.Context) {
 	}
 }
 
-// EditConfig 修改配置
-func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
+func (s *SysConfigApi) UpdateSysConfig(ctx *gin.Context) {
 	var config system.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.UpdateSysConfig(ctx.Request.Context(), &config)
@@ -71,8 +66,7 @@ func (s *SysConfigApi) EditConfig(ctx *gin.Context) {
 	}
 }
 
-// RemoveConfig 删除配置
-func (s *SysConfigApi) RemoveConfig(ctx *gin.Context) {
+func (s *SysConfigApi) DeleteSysConfig(ctx *gin.Context) {
 	var config request.SysConfig
 	_ = ctx.ShouldBindJSON(&config)
 	err := syssrv.SysConfigSrv.DeleteSysConfigByIds(ctx.Request.Context(), config.Ids)

@@ -18,46 +18,82 @@ func NewSysUserDao(ctx context.Context) *SysUserDao {
 	return &SysUserDao{configs.GetDB(ctx)}
 }
 
-// SelectById 通过id查询用户信息
-func (dao *SysUserDao) SelectById(id int64) (user *system.SysUser, err error) {
-	err = dao.DB.Model(&system.SysUser{}).Where("user_id=?", id).First(&user).Error
+func NewSysUserDaoByDB(db *gorm.DB) *SysUserDao {
+	return &SysUserDao{db}
+}
+
+func (dao *SysUserDao) SelectList(sysUser *request.SysUser) (p *page.Pagination, err error) {
+	var userLIst []*system.SysUser
+	p = new(page.Pagination)
+
+	if sysUser.UserName != "" {
+		dao.DB = dao.DB.Where("user_name = ?", sysUser.UserName)
+	}
+	if sysUser.Status != "" {
+		dao.DB = dao.DB.Where("status = ?", sysUser.Status)
+	}
+
+	if sysUser.OpenPage {
+		p.PageNum = sysUser.PageNum
+		p.PageSize = sysUser.PageSize
+		err = dao.DB.Scopes(page.SelectPage(userLIst, p, dao.DB)).Find(&userLIst).Error
+	} else {
+		err = dao.DB.Find(&userLIst).Error
+	}
+	p.Rows = userLIst
+	if err != nil {
+		p.Code = e.ERROR
+		p.Msg = err.Error()
+		return p, err
+	}
+	return p, err
+}
+
+func (dao *SysUserDao) SelectAll(sysUser *request.SysUser) (list []system.SysUser, err error) {
+	if sysUser.UserID != 0 {
+		dao.DB = dao.DB.Where("user_id = ?", sysUser.UserID)
+	}
+	if sysUser.UserName != "" {
+		dao.DB = dao.DB.Where("user_name = ?", sysUser.UserName)
+	}
+	if sysUser.Status != "" {
+		dao.DB = dao.DB.Where("status = ?", sysUser.Status)
+	}
+	if sysUser.DataScope != "" {
+		// todo
+	}
+
+	err = dao.DB.Where("del_flag = '0'").Find(&list).Error
 	return
 }
 
-// SelectUserByUserName 根据用户名（账号）查询用户信息
 func (dao *SysUserDao) SelectUserByUserName(username string) (sysUser *system.SysUser, err error) {
 	err = dao.DB.Model(&system.SysUser{}).Where("user_name=?", username).First(&sysUser).Error
 	return
 }
 
-// Insert 新增用户
-func (dao *SysUserDao) Insert(user *system.SysUser) error {
-	return dao.DB.Model(&system.SysUser{}).Create(&user).Error
+func (dao *SysUserDao) SelectById(id int64) (sysUser *system.SysUser, err error) {
+	err = dao.DB.Model(&sysUser).Where("user_id=?", id).Find(&sysUser).Error
+	return
 }
 
-// DeleteById 根据 id 删除用户
+func (dao *SysUserDao) Insert(sysUser *system.SysUser) error {
+	return dao.DB.Model(&system.SysUser{}).Create(sysUser).Error
+}
+
+func (dao *SysUserDao) UpdateById(sysUser *system.SysUser) error {
+	return dao.DB.Save(sysUser).Error
+}
+
 func (dao *SysUserDao) DeleteById(id int64) error {
-	return dao.DB.Where("user_id=?", id).Delete(&system.SysUser{}).Error
+	return dao.DB.Where("user_id = ?", id).Delete(&system.SysUser{}).Error
 }
 
-// UpdateById 通过 id 修改用户
-func (dao *SysUserDao) UpdateById(user *system.SysUser) error {
-	return dao.DB.Model(&system.SysUser{}).Where("user_id=?", user.UserID).Updates(user).Error
+func (dao *SysUserDao) DeleteByIds(ids []int64) error {
+	return dao.DB.Where("user_id in (?)", ids).Delete(&system.SysUser{}).Error
 }
 
-// SelectList 分页查询
-func (dao *SysUserDao) SelectList(user *request.SysUser) (*page.Pagination, error) {
-	var userList []*system.SysUser
-	p := page.Pagination{
-		PageNum:  user.PageNum,
-		PageSize: user.PageSize,
-	}
-	err := dao.DB.Scopes(page.SelectPage(userList, &p, dao.DB)).Find(&userList).Error
-	if err != nil {
-		p.Code = e.ERROR
-		p.Msg = err.Error()
-		return nil, err
-	}
-	p.Rows = userList
-	return &p, err
+func (dao *SysUserDao) CheckUserNameUnique(roleName string) (count int64, err error) {
+	err = dao.DB.Model(&system.SysUser{}).Where("user_name = ?", roleName).Where("del_flag = '0'").Count(&count).Error
+	return
 }

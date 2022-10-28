@@ -29,7 +29,8 @@ type SysMenu struct {
 	Remark     string     `json:"remark"`                   // 备注
 	Children   []*SysMenu `json:"children,omitempty"`       // 子菜单
 	ArrIdx     int        `json:"arrIdx,omitempty"`         // 临时变量 用于生成tree
-	RoleId     int64      `json:"roleId"`                   // 角色id
+	RoleId     int64      `json:"roleId"`                   // 角色Id
+	UserId     int64      `json:"userId"`                   // 用户Id
 }
 
 type MenuListByRoleId struct {

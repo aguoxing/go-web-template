@@ -18,6 +18,10 @@ func NewSysDictDataDao(ctx context.Context) *SysDictDataDao {
 	return &SysDictDataDao{configs.GetDB(ctx)}
 }
 
+func NewSysDictDataDaoByDB(db *gorm.DB) *SysDictDataDao {
+	return &SysDictDataDao{db}
+}
+
 func (dao *SysDictDataDao) SelectList(dictData request.SysDictData) (p *page.Pagination, err error) {
 	var dictDataList []*system.SysDictData
 	p = new(page.Pagination)

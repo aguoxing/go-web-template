@@ -18,6 +18,10 @@ func NewSysConfigDao(ctx context.Context) *SysConfigDao {
 	return &SysConfigDao{configs.GetDB(ctx)}
 }
 
+func NewSysConfigDaoByDB(db *gorm.DB) *SysConfigDao {
+	return &SysConfigDao{db}
+}
+
 func (dao *SysConfigDao) SelectList(sysConfig *request.SysConfig) (p *page.Pagination, err error) {
 	var configList []*system.SysConfig
 	p = new(page.Pagination)

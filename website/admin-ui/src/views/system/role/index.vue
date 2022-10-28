@@ -588,9 +588,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const roleIds = row.roleId || this.ids;
+      let roleIds = [];
+      if (row.dictId !== undefined) {
+        roleIds.push(row.roleId)
+      } else {
+        roleIds = this.ids
+      }
       this.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项？').then(function() {
-        return delRole(roleIds);
+        return delRole({ids: roleIds});
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
